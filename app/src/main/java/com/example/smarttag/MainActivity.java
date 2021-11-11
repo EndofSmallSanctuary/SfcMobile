@@ -6,16 +6,23 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.View;
 
-import com.example.smarttag.ViewModels.WelcomeViewModel;
+import com.example.smarttag.Models.UserInfo;
+import com.example.smarttag.ViewModels.WelcomeScreen.WelcomeEvent;
+import com.example.smarttag.ViewModels.WelcomeScreen.WelcomeEventsTypes;
+import com.example.smarttag.ViewModels.WelcomeScreen.WelcomeViewModel;
 import com.example.smarttag.Views.Components.StatusTextView;
+import com.example.smarttag.Views.RegistationFragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import es.dmoral.toasty.Toasty;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,35 +37,75 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         viewModel = new ViewModelProvider(this).get(WelcomeViewModel.class);
 
+        loadingStatus.appendNeutral(getString(R.string.welcome_permissionscheck));
+        if(preparePermissions()){
+            loadingStatus.appendNeutral(getString(R.string.welcome_retrievingdevinfo));
+            loadingStatus.appendNeutral(getString(R.string.welcome_connectionestablish));
+            viewModel.startSesion();
+        }
+        viewModel.getSessionLiveData().observe(this, new Observer<WelcomeEvent>() {
+            @Override
+            public void onChanged(WelcomeEvent welcomeEvent) {
+                switch (welcomeEvent.getWe_type()) {
+                    case WelcomeEventsTypes
+                            .SESSION_EVENT: {
+                        Session session = (Session) welcomeEvent.getObject();
+                        if (session.apikey == null) {
+                            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    loadingStatus.appendError(getString(R.string.welcome_connectionerror));
 
+                                }
+                            });
+                        } else {
+                            loadingStatus.appendSuccess(getString(R.string.welcome_connectionestablished));
+                            if (session.is_new_client) {
+                                loadingStatus.appendNeutral(getString(R.string.welcome_newclient));
+                                attachRegistationFragment();
+                            } else {
+                                startActivity(new Intent(MainActivity.this,PresentationActivity.class));
+                                finish();
+                            }
+                        }
+                        break;
+                    }
+                    case WelcomeEventsTypes
+                            .REGISTRATION_EVENT:{
+                        Boolean registationStatus = (Boolean)welcomeEvent.getObject();
+                        if(registationStatus!=null&&registationStatus){
+                            Toasty.success(MainActivity.this,getResources().getString(R.string.welcome_registrationsuccess), Toasty.LENGTH_SHORT).show();
+                            startActivity(new Intent(MainActivity.this,PresentationActivity.class));
+                            finish();
+                        } else {
+                            Toasty.error(MainActivity.this,getResources().getString(R.string.welcome_registrationfail), Toasty.LENGTH_SHORT).show();
+                        }
+                        break;
+                    }
+                    default: {break;}
+                }
+            }
+        });
     }
 
 
 
     @Override
     protected void onResume() {
-        loadingStatus.appendNeutral("Проверяю разрешения");
-        if(preparePermissions()){
-            loadingStatus.appendNeutral("Собираю данные о клиенте");
-            loadingStatus.appendNeutral("Устанавливаю соединение с сервером");
-
-            viewModel.startSesion();
-        }
-        viewModel.getSessionLiveData().observe(this, new Observer<Session>() {
-            @Override
-            public void onChanged(Session session) {
-                if(session.apikey==null){
-                    loadingStatus.appendError("Ошибка соединения");
-                }
-                else {
-                    loadingStatus.appendSuccess("Соединение установлено");
-                    if(session.is_new_client){
-                        loadingStatus.appendNeutral("Обнаружен новый клиент");
-                    }
-                }
-            }
-        });
         super.onResume();
+    }
+
+    public void registratesomebruh(UserInfo userInfo){
+        viewModel.registrateSomebruh(userInfo);
+    }
+
+    private void attachRegistationFragment() {
+        loadingStatus.setVisibility(View.GONE);
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.Welcome_Fragment_Container,new RegistationFragment())
+                .commit();
+
     }
 
     private boolean preparePermissions(){
@@ -75,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
                     Manifest.permission.ACCESS_COARSE_LOCATION
             }, 1);
         } else {
-            loadingStatus.appendSuccess("Разрешения получены");
+            loadingStatus.appendSuccess(getString(R.string.weclome_permissionsgranted));
             return true;
         }
         return false;
@@ -88,11 +135,13 @@ public class MainActivity extends AppCompatActivity {
             for(int i=0;i<grantResults.length;i++){
                if(grantResults[i]!=0){
                    if(!shouldShowRequestPermissionRationale(permissions[i])){
-                       loadingStatus.appendError("Ошибка получения разрешений!");
+                       loadingStatus.appendError(getString(R.string.welcome_permissionerror));
                    } else
                         preparePermissions();
                }
             }
         }
     }
+
+
 }

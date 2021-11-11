@@ -1,14 +1,22 @@
 package com.example.smarttag.Api;
 
 import com.example.smarttag.Models.DeviceInfo;
+import com.example.smarttag.Models.UserInfo;
 import com.example.smarttag.Session;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface KrotApi {
-    @POST("/Api/DevHandshake")
+    @POST("DevHandshake")
     Call<Session> handshake(@Body DeviceInfo body);
+
+    @POST("Register")
+    Call<Void> registration(@Header("api-key")String apikey,
+                            @Query("client_id")Long client_id, @Body UserInfo userInfo);
 }
