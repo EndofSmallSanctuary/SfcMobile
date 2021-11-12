@@ -1,7 +1,109 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    android:background="@color/white"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <TextView
+        android:id="@+id/Bluetooth.Functions.Header"
+        style="@style/FunctionsHeaderText"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:text="Functions"/>
+
+    <GridLayout
+        android:id="@+id/Bluetooth.Functions.Grid"
+        app:layout_constraintTop_toBottomOf="@id/Bluetooth.Functions.Header"
+        android:columnCount="3"
+        android:alignmentMode="alignBounds"
+        android:rowOrderPreserved="true"
+        android:useDefaultMargins="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            style="@style/FunctionsMenuNode">
+
+            <ImageView
+                android:src="@drawable/network"
+                android:layout_width="40dp"
+                android:layout_height="40dp"/>
+            <TextView
+                android:layout_marginTop="10dp"
+                android:textAlignment="center"
+                android:text="Start bluetooth request"
+                android:fontFamily="@font/roboto_bold"
+                android:textColor="@color/black"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <LinearLayout
+            style="@style/FunctionsMenuNode">
+
+            <ImageView
+                android:src="@drawable/bluetooth"
+                android:layout_width="40dp"
+                android:layout_height="40dp"/>
+            <TextView
+                android:layout_marginTop="10dp"
+                android:textAlignment="center"
+                android:text="Scan new  devices"
+                android:fontFamily="@font/roboto_bold"
+                android:textColor="@color/black"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <LinearLayout
+            style="@style/FunctionsMenuNode">
+
+            <ImageView
+                android:src="@drawable/location"
+                android:layout_width="40dp"
+                android:layout_height="40dp"/>
+            <TextView
+                android:layout_marginTop="10dp"
+                android:textAlignment="center"
+                android:text="Check gps service status"
+                android:fontFamily="@font/roboto_bold"
+                android:textColor="@color/black"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+    </GridLayout>
+
+<TextView
+    android:text="Available Devices"
+    style="@style/FunctionsHeaderText"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/Bluetooth.Functions.Grid"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+<!--    <com.example.smarttag.Views.Components.PulsatingImage-->
+<!--        android:id="@+id/Bluetooth.PulsatingImage"-->
+<!--        android:layout_width="100dp"-->
+<!--        android:layout_height="100dp"-->
+<!--        android:src="@drawable/circle"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"/>-->
+
+<!--    <Button-->
+<!--        android:id="@+id/Bluetooth.SearchButton"-->
+<!--        android:text="@string/scan"-->
+<!--        style="@style/TransparentButton"-->
+<!--        app:layout_constraintTop_toTopOf="@id/Bluetooth.PulsatingImage"-->
+<!--        app:layout_constraintBottom_toBottomOf="@id/Bluetooth.PulsatingImage"-->
+<!--        app:layout_constraintStart_toStartOf="@id/Bluetooth.PulsatingImage"-->
+<!--        app:layout_constraintEnd_toEndOf="@id/Bluetooth.PulsatingImage"-->
+<!--        android:layout_width="100dp"-->
+<!--        android:layout_height="100dp"/>-->
+
+

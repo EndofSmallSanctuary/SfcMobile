@@ -2,19 +2,19 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/menu_bluetooth"
+        android:id="@+id/Menu.Bluetooth"
         android:enabled="true"
         android:icon="@drawable/ic_baseline_bluetooth_connected_24"
         android:title="@string/bluetooth">
     </item>
     <item
-        android:id="@+id/menu_chat"
+        android:id="@+id/Menu.Chat"
         android:enabled="true"
         android:icon="@drawable/ic_baseline_message_24"
         android:title="@string/chat">
     </item>
     <item
-        android:id="@+id/menu_settings"
+        android:id="@+id/Menu.Settings"
         android:enabled="true"
         android:icon="@drawable/ic_baseline_settings_24"
         android:title="@string/settings">

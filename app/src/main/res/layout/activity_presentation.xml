@@ -6,17 +6,16 @@
     android:layout_height="match_parent"
     tools:context=".PresentationActivity">
 
-    <ImageView
+    <FrameLayout
+        android:id="@+id/Presentation.ViewHolder"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/presentation_navigation_bar"
-        android:src="@drawable/tonny"
-        android:scaleType="fitXY"
+        app:layout_constraintBottom_toTopOf="@id/Presentation.Navigation"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="0dp"/>
 
 
     <include
-        android:id="@+id/presentation_navigation_bar"
+        android:id="@+id/Presentation.Navigation"
         layout="@layout/sfc_navigation_bar"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -24,7 +24,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class KrotRepository {
-//    private static final String  baseurl = "https://sfc.rniirs.ru/Api/";
+   // private static final String  baseurl = "https://sfc.rniirs.ru/Api/";
     private static final String  baseurl = "http://192.168.0.100:8080/";
 
     private KrotApi krotApi;
@@ -38,12 +38,10 @@ public class KrotRepository {
     }
 
     public static KrotRepository getInstance(){
-        if(instance!=null){
-            return instance;
-        } else {
-           instance = new KrotRepository();
-           return instance;
+        if (instance == null) {
+            instance = new KrotRepository();
         }
+        return instance;
     }
 
     private void init(){
