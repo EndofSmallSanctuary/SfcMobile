@@ -33,4 +33,13 @@
     <string name="bluetooth_service_status">Bluetooth service status</string>
     <string name="gps_service_status">Gps service status</string>
     <string name="available_devices">Available Devices</string>
+    <string name="request_enabled">Request Enabled</string>
+    <string name="request_disabled">Request disabled</string>
+    <string name="scan_mode_enabled">Scan mode enabled</string>
+    <string name="scan_mode_disabled">Scan mode disabled</string>
+    <string name="gps_status_requested">Gps status requested</string>
+    <string name="gps_location_arrived">Gps location arrived</string>
+    <string name="accuracy">Accuracy:</string>
+    <string name="gps_location_is_null">Gps location is null</string>
+    <string name="not_sending">Not sending</string>
 </resources>

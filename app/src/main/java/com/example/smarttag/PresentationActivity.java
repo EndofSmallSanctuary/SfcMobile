@@ -3,21 +3,27 @@ package com.example.smarttag;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.MenuItem;
 
+import com.example.smarttag.Models.BleEvt;
 import com.example.smarttag.Services.BluetoothService;
 import com.example.smarttag.Services.GpsService;
 import com.example.smarttag.Views.BluetoothFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -29,8 +35,7 @@ public class PresentationActivity extends AppCompatActivity {
     BottomNavigationView navigationView;
     BluetoothService bluetoothService;
     GpsService gpsService;
-
-
+    BroadcastReceiver eventReciever = new EventReciever();
     private final ServiceConnection gpsServiceConnection =  new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -67,11 +72,28 @@ public class PresentationActivity extends AppCompatActivity {
         }
     };
 
+    public class EventReciever extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            try {
+                BleEvt bleEvt = intent.getParcelableExtra("payload");
+                if(bleEvt!=null){
+                    Toasty.success(PresentationActivity.this,bleEvt.getBleEvt_NumMsg()+"",Toasty.LENGTH_SHORT).show();
+                }
+            } catch (Exception e){
+                Log.d("status",e.getMessage());
+            }
+        }
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_presentation);
         ButterKnife.bind(this);
+
+        registerReceiver(eventReciever,new IntentFilter("ACTION_SMART_TAG"));
 
         //Binding services
         bindService(new Intent(this,GpsService.class),gpsServiceConnection, Context.BIND_AUTO_CREATE);
@@ -95,8 +117,11 @@ public class PresentationActivity extends AppCompatActivity {
         });
     }
 
+
+
     @Override
     protected void onDestroy() {
+        unregisterReceiver(eventReciever);
         unbindService(bluetoothServiceConnection);
         unbindService(gpsServiceConnection);
         stopService(new Intent(this, BluetoothService.class));
@@ -126,4 +151,11 @@ public class PresentationActivity extends AppCompatActivity {
             this.bluetoothService.stopProcessing();
         }
     }
+    public Location getActualLocation(){
+        return this.gpsService.getActualLocation();
+    }
+
+
+
+
 }

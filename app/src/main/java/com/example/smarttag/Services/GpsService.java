@@ -3,6 +3,7 @@ package com.example.smarttag.Services;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -11,12 +12,14 @@ import android.location.LocationManager;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 
+import java.util.Date;
 import java.util.List;
 
 import es.dmoral.toasty.Toasty;
@@ -27,6 +30,7 @@ public class GpsService extends Service {
     private final IBinder binder = new GpsBinder();
     Boolean isBinded = false;
     Boolean isAlive = false;
+    PowerManager.WakeLock wakeLock;
     private final LocationListener locationListener = new LocationListener() {
         @Override
         public void onLocationChanged(@NonNull Location location) {
@@ -65,7 +69,9 @@ public class GpsService extends Service {
 
 
     public Location getActualLocation(){
-        return this.actualLocation;
+        if(new Date().getTime() - this.actualLocation.getTime()<=10000)
+            return this.actualLocation;
+        else return null;
     };
 
 
@@ -102,7 +108,7 @@ public class GpsService extends Service {
                 return;
             }
             if(locationManager!=null){
-                long UPDATE_INTERVAL = 1000;
+                long UPDATE_INTERVAL = 0;
                 locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
                         UPDATE_INTERVAL,0,locationListener);
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
@@ -120,8 +126,17 @@ public class GpsService extends Service {
     }
 
     @Override
+    public void onCreate() {
+        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        wakeLock= pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getClass().getCanonicalName());
+        wakeLock.acquire();
+        super.onCreate();
+    }
+
+    @Override
     public void onDestroy() {
         isAlive = false;
+        wakeLock.release();
         super.onDestroy();
     }
 }

@@ -12,6 +12,11 @@ import android.os.IBinder;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import com.example.smarttag.Models.BleEvt;
+
+import java.util.Date;
 
 import es.dmoral.toasty.Toasty;
 
@@ -22,6 +27,7 @@ public class BluetoothService extends Service {
     Boolean scan_mode = false;
     BluetoothLeScanner scanner;
     private final IBinder binder = new BluetoothBinder();
+
     ScanCallback scanCallback = new ScanCallback() {
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
@@ -38,18 +44,26 @@ public class BluetoothService extends Service {
                         msg[2] = bytes[10];
                         msg[3] = bytes[11];
                         Integer readyMsg = byteArrayToInt(msg);
-                        Toasty.success(getApplicationContext(),device.getName()+" : "+readyMsg+" with scan "+scan_mode,Toasty.LENGTH_SHORT).show();
-
+                        Toasty.success(getApplicationContext(),"ASD",Toasty.LENGTH_SHORT).show();
+                        Intent intent = new Intent("ACTION_SMART_TAG");
+                        BleEvt bleEvt = new BleEvt();
+                        bleEvt.setBleEvt_RSSI((long) result.getRssi());
+                        bleEvt.setBleEvt_NumMsg(Long.valueOf(readyMsg));
+                        bleEvt.setBleEvt_Time(new Date().getTime());
+                        intent.putExtra("payload",bleEvt);
+                        sendBroadcast(intent);
                     }
                 }
             }
         }
-
         @Override
         public void onScanFailed(int errorCode) {
             super.onScanFailed(errorCode);
         }
     };
+
+
+
 
     public Boolean isInRequest(){
         return isInRequest;

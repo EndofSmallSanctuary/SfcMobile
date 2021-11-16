@@ -1,10 +1,14 @@
+<ScrollView
+    android:background="@color/sfc_creamy"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 <LinearLayout
+    android:background="@color/sfc_creamy"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#f0f0f0"
-    android:orientation="vertical"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:orientation="vertical">
 
     <include layout="@layout/sfc_action_bar"/>
 
@@ -98,7 +102,7 @@
         android:background="@color/white"
         android:layout_marginTop="10dp"
         android:layout_width="match_parent"
-        android:layout_height="150dp">
+        android:layout_height="wrap_content">
 
         <LinearLayout
             style="@style/FunctionsStatusNode">
@@ -164,31 +168,28 @@
         app:layout_constraintTop_toBottomOf="@id/Bluetooth.Functions.Grid"/>
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/Bluetooth.Recyclers.Devs"
         android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:layout_marginStart="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:text="Latest Events"
+        style="@style/FunctionsHeaderText"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/Bluetooth.Functions.Grid"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:background="@android:color/transparent"
+        android:id="@+id/Bluetooth.Recyclers.Events"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
         android:layout_marginStart="5dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 </LinearLayout>
-
-<!--    <com.example.smarttag.Views.Components.PulsatingImage-->
-<!--        android:id="@+id/Bluetooth.PulsatingImage"-->
-<!--        android:layout_width="100dp"-->
-<!--        android:layout_height="100dp"-->
-<!--        android:src="@drawable/circle"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"/>-->
-
-<!--    <Button-->
-<!--        android:id="@+id/Bluetooth.SearchButton"-->
-<!--        android:text="@string/scan"-->
-<!--        style="@style/TransparentButton"-->
-<!--        app:layout_constraintTop_toTopOf="@id/Bluetooth.PulsatingImage"-->
-<!--        app:layout_constraintBottom_toBottomOf="@id/Bluetooth.PulsatingImage"-->
-<!--        app:layout_constraintStart_toStartOf="@id/Bluetooth.PulsatingImage"-->
-<!--        app:layout_constraintEnd_toEndOf="@id/Bluetooth.PulsatingImage"-->
-<!--        android:layout_width="100dp"-->
-<!--        android:layout_height="100dp"/>-->
+</ScrollView>
 
 

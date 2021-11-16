@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
+    android:paddingStart="10dp"
+    android:paddingEnd="30dp"
+    android:layout_marginStart="5dp"
+    android:layout_marginEnd="10dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/rounded_corners_common_layout"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/EventsRecycler.Status"
+        android:src="@drawable/status_success"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="35dp"
+        android:layout_height="35dp"/>
+    <TextView
+        android:id="@+id/EventsRecycler.Name"
+        android:text="Event Succeeded"
+
+        android:textSize="18sp"
+        android:fontFamily="@font/roboto_bold_italic"
+        android:layout_marginStart="10dp"
+        android:textColor="@color/black"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/EventsRecycler.Status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <TextView
+        android:id="@+id/EventsRecycler.Time"
+        android:text="25.11.12:31234323"
+        android:fontFamily="@font/roboto_black"
+        android:textSize="13sp"
+        android:layout_marginTop="-3dp"
+        android:layout_marginStart="10dp"
+        android:textColor="@color/black"
+        app:layout_constraintTop_toBottomOf="@id/EventsRecycler.Name"
+        app:layout_constraintStart_toEndOf="@id/EventsRecycler.Status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <TextView
+        android:id="@+id/EventsRecycler.Desc"
+        android:text="Event description applies here"
+        app:layout_constraintTop_toBottomOf="@id/EventsRecycler.Time"
+        app:layout_constraintStart_toStartOf="@id/EventsRecycler.Name"
+        android:layout_width="wrap_content"
+        android:textSize="14sp"
+        android:layout_height="wrap_content"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,10 +2,10 @@ package com.example.smarttag.Models;
 
 public class BleDev {
     Long idBleDev;
-    String BleDev_MAC;
-    String BleDev_Name;
-    String BleDev_LastModified;
-    String BLeDev_SerialNumber;
+    String bleDev_MAC;
+    String bleDev_Name;
+    String bleDev_LastModified;
+    String bLeDev_SerialNumber;
 
     public Long getIdBleDev() {
         return idBleDev;
@@ -16,34 +16,34 @@ public class BleDev {
     }
 
     public String getBleDev_MAC() {
-        return BleDev_MAC;
+        return bleDev_MAC;
     }
 
     public void setBleDev_MAC(String bleDev_MAC) {
-        BleDev_MAC = bleDev_MAC;
+        this.bleDev_MAC = bleDev_MAC;
     }
 
     public String getBleDev_Name() {
-        return BleDev_Name;
+        return bleDev_Name;
     }
 
     public void setBleDev_Name(String bleDev_Name) {
-        BleDev_Name = bleDev_Name;
+        this.bleDev_Name = bleDev_Name;
     }
 
     public String getBleDev_LastModified() {
-        return BleDev_LastModified;
+        return bleDev_LastModified;
     }
 
     public void setBleDev_LastModified(String bleDev_LastModified) {
-        BleDev_LastModified = bleDev_LastModified;
+        this.bleDev_LastModified = bleDev_LastModified;
     }
 
-    public String getBLeDev_SerialNumber() {
-        return BLeDev_SerialNumber;
+    public String getbLeDev_SerialNumber() {
+        return bLeDev_SerialNumber;
     }
 
-    public void setBLeDev_SerialNumber(String BLeDev_SerialNumber) {
-        this.BLeDev_SerialNumber = BLeDev_SerialNumber;
+    public void setbLeDev_SerialNumber(String bLeDev_SerialNumber) {
+        this.bLeDev_SerialNumber = bLeDev_SerialNumber;
     }
 }
