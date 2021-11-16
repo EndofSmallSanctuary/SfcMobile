@@ -22,6 +22,7 @@
         android:theme="@style/Theme.SmartTag">
         <activity
             android:name=".PresentationActivity"
+            android:launchMode="singleTop"
             android:exported="true" />
         <activity
             android:name=".MainActivity"
@@ -32,8 +33,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".Services.BluetoothService" android:enabled="true"/>
-        <service android:name=".Services.GpsService" android:enabled="true"/>
+        <service android:name=".Services.BluetoothService"/>
+        <service android:name=".Services.GpsService"/>
 
     </application>
 

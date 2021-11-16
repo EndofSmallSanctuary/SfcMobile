@@ -23,6 +23,8 @@ import com.example.smarttag.ViewModels.WelcomeScreen.WelcomeViewModel;
 import com.example.smarttag.Views.Components.StatusTextView;
 import com.example.smarttag.Views.RegistationFragment;
 
+import java.text.DecimalFormat;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import es.dmoral.toasty.Toasty;
@@ -42,13 +44,10 @@ public class MainActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this).get(WelcomeViewModel.class);
 
         loadingStatus.appendNeutral(getString(R.string.welcome_permissionscheck));
-        if(preparePermissions()){
-            loadingStatus.appendNeutral(getString(R.string.welcome_retrievingdevinfo));
-            loadingStatus.appendNeutral(getString(R.string.launching_services));
-            startService(new Intent(this, GpsService.class));
-            startService(new Intent(this, BluetoothService.class));
-            loadingStatus.appendNeutral(getString(R.string.welcome_connectionestablish));
-            viewModel.startSesion();
+
+
+         if(preparePermissions()){
+            onPermissionsGranted();
         }
         viewModel.getSessionLiveData().observe(this, new Observer<ViewModelEvent>() {
             @Override
@@ -97,6 +96,14 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void onPermissionsGranted() {
+        loadingStatus.appendNeutral(getString(R.string.welcome_retrievingdevinfo));
+        loadingStatus.appendNeutral(getString(R.string.launching_services));
+        startService(new Intent(this, GpsService.class));
+        startService(new Intent(this, BluetoothService.class));
+        loadingStatus.appendNeutral(getString(R.string.welcome_connectionestablish));
+        viewModel.startSesion();
+    }
 
 
     @Override
@@ -149,8 +156,10 @@ public class MainActivity extends AppCompatActivity {
                        loadingStatus.appendError(getString(R.string.welcome_permissionerror));
                    } else
                         preparePermissions();
+                        return;
                }
             }
+            onPermissionsGranted();
         }
     }
 

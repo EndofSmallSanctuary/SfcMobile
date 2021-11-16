@@ -34,6 +34,7 @@ public class GpsService extends Service {
     private final LocationListener locationListener = new LocationListener() {
         @Override
         public void onLocationChanged(@NonNull Location location) {
+            Log.d("status","location changed");
             List<String> locationProviders = locationManager.getProviders(true);
             Location offeredLocation = null;
             for (String provider : locationProviders){
@@ -41,24 +42,27 @@ public class GpsService extends Service {
                 if(l==null){
                     continue;
                 }
-                if(offeredLocation == null || l.getAccuracy() < offeredLocation.getAccuracy()){
-                    offeredLocation = l;
+                if(validateLocation(l)) {
+                    if (offeredLocation == null || l.getAccuracy() < offeredLocation.getAccuracy()) {
+                        offeredLocation = l;
+                    }
                 }
+                Log.d("status",provider+" offers a location at "+l.getTime());
             }
 
             if (offeredLocation!=null) {
+                Log.d("status","current actual location will be at "+offeredLocation.getTime());
                 actualLocation = offeredLocation;
             };
         }
 
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras) {
-            //
+
         }
 
         @Override
         public void onProviderDisabled(@NonNull String provider) {
-                //
         }
 
         @Override
@@ -69,11 +73,16 @@ public class GpsService extends Service {
 
 
     public Location getActualLocation(){
-        if(new Date().getTime() - this.actualLocation.getTime()<=10000)
+        if(validateLocation(this.actualLocation))
             return this.actualLocation;
         else return null;
     };
 
+    private boolean validateLocation(Location location){
+        if(location!=null&&new Date().getTime() - location.getTime()<=30000)
+            return  true;
+        else return false;
+    }
 
     public Boolean isAlive(){
         return this.isAlive;
@@ -93,11 +102,12 @@ public class GpsService extends Service {
     }
 
 
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         initiateProcessing();
         isAlive = true;
-        return super.onStartCommand(intent, flags, startId);
+        return START_STICKY;
     }
 
     private void initiateProcessing() {
@@ -110,9 +120,10 @@ public class GpsService extends Service {
             if(locationManager!=null){
                 long UPDATE_INTERVAL = 0;
                 locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
-                        UPDATE_INTERVAL,0,locationListener);
+                                UPDATE_INTERVAL,0,locationListener);
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                         UPDATE_INTERVAL,0,locationListener);
+               // actualLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
             }
         } catch (Exception e){
             Log.d("exp",e.getMessage());
@@ -121,17 +132,20 @@ public class GpsService extends Service {
 
 
 
+
     public class GpsBinder extends Binder {
         public GpsService getService() {return GpsService.this;}
     }
 
+
     @Override
     public void onCreate() {
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        wakeLock= pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getClass().getCanonicalName());
+        wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getClass().getCanonicalName());
         wakeLock.acquire();
         super.onCreate();
     }
+
 
     @Override
     public void onDestroy() {
