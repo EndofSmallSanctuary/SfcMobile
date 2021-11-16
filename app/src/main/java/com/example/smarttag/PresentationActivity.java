@@ -2,6 +2,8 @@ package com.example.smarttag;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -18,10 +20,13 @@ import android.view.MenuItem;
 import com.example.smarttag.Models.BleEvt;
 import com.example.smarttag.Services.BluetoothService;
 import com.example.smarttag.Services.GpsService;
+import com.example.smarttag.ViewModels.BluetoothFragment.ForegroundEvent;
+import com.example.smarttag.ViewModels.PresentationViewModel;
 import com.example.smarttag.Views.BluetoothFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -36,6 +41,9 @@ public class PresentationActivity extends AppCompatActivity {
     BluetoothService bluetoothService;
     GpsService gpsService;
     BroadcastReceiver eventReciever = new EventReciever();
+    PresentationViewModel viewmodel;
+    Timer gpsTimer = new Timer();
+
     private final ServiceConnection gpsServiceConnection =  new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -92,8 +100,36 @@ public class PresentationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_presentation);
         ButterKnife.bind(this);
-
+        viewmodel = new ViewModelProvider(this).get(PresentationViewModel.class);
         registerReceiver(eventReciever,new IntentFilter("ACTION_SMART_TAG"));
+
+        gpsTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if(getGpsServiceStatus()){
+                    Location location = getActualLocation();
+                    if(location!=null){
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                prepareSignatureRequest(ForegroundEvent.FOREGROUND_EVENT_TYPE_GPS,
+                                        getString(R.string.gps_location_arrived),"Lat: "+location.getLatitude()+" "+"Long: "+location.getLongitude());
+                            }
+                        });
+                    } else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                prepareSignatureRequest(ForegroundEvent.FOREGROUND_EVENT_TYPE_GPS,
+                                        getString(R.string.gps_location_is_null),getString(R.string.not_sending));
+                            }
+                        });
+
+                    }
+                }
+            }
+        },5000,5000);
+
 
         //Binding services
         bindService(new Intent(this,GpsService.class),gpsServiceConnection, Context.BIND_AUTO_CREATE);
@@ -153,6 +189,31 @@ public class PresentationActivity extends AppCompatActivity {
     }
     public Location getActualLocation(){
         return this.gpsService.getActualLocation();
+    }
+    public ArrayList<ForegroundEvent> getForegroundEvents() {return  this.viewmodel.getForegroundEvents(); }
+    public void prepareSignatureRequest(int eventType,String event,String desc){
+        switch (eventType){
+            case ForegroundEvent.FOREGROUND_EVENT_TYPE_NETWORK: {
+                onNewForegroundEvent(new ForegroundEvent(ContextCompat.getDrawable(this,R.drawable.network),event,desc));
+                break;
+            }
+            case ForegroundEvent.FOREGROUND_EVENT_TYPE_SCAN:{
+                onNewForegroundEvent(new ForegroundEvent(ContextCompat.getDrawable(this,R.drawable.bluetooth),event,desc));
+                break;
+            }
+            case ForegroundEvent.FOREGROUND_EVENT_TYPE_GPS:{
+                onNewForegroundEvent(new ForegroundEvent(ContextCompat.getDrawable(this,R.drawable.location),event,desc));
+            }
+        }
+    }
+
+    public void onNewForegroundEvent(ForegroundEvent event){
+        int index = viewmodel.addNewForegroundEvent(event);
+        BluetoothFragment bluetoothFragment = (BluetoothFragment) getSupportFragmentManager().findFragmentByTag("ble_fragment");
+        if(bluetoothFragment!=null) {
+            bluetoothFragment.onNewForegroundEvent();
+        }
+
     }
 
 
