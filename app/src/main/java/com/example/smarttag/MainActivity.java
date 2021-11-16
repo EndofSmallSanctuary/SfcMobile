@@ -11,10 +11,13 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 
 import com.example.smarttag.Models.UserInfo;
-import com.example.smarttag.ViewModels.WelcomeScreen.WelcomeEvent;
+import com.example.smarttag.Services.BluetoothService;
+import com.example.smarttag.Services.GpsService;
+import com.example.smarttag.ViewModels.ViewModelEvent;
 import com.example.smarttag.ViewModels.WelcomeScreen.WelcomeEventsTypes;
 import com.example.smarttag.ViewModels.WelcomeScreen.WelcomeViewModel;
 import com.example.smarttag.Views.Components.StatusTextView;
@@ -29,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.Welcome_Status)
     StatusTextView loadingStatus;
     WelcomeViewModel viewModel;
+    Boolean isRegistrationPassed = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,16 +44,19 @@ public class MainActivity extends AppCompatActivity {
         loadingStatus.appendNeutral(getString(R.string.welcome_permissionscheck));
         if(preparePermissions()){
             loadingStatus.appendNeutral(getString(R.string.welcome_retrievingdevinfo));
+            loadingStatus.appendNeutral(getString(R.string.launching_services));
+            startService(new Intent(this, GpsService.class));
+            startService(new Intent(this, BluetoothService.class));
             loadingStatus.appendNeutral(getString(R.string.welcome_connectionestablish));
             viewModel.startSesion();
         }
-        viewModel.getSessionLiveData().observe(this, new Observer<WelcomeEvent>() {
+        viewModel.getSessionLiveData().observe(this, new Observer<ViewModelEvent>() {
             @Override
-            public void onChanged(WelcomeEvent welcomeEvent) {
-                switch (welcomeEvent.getWe_type()) {
+            public void onChanged(ViewModelEvent viewModelEvent) {
+                switch (viewModelEvent.getWe_type()) {
                     case WelcomeEventsTypes
                             .SESSION_EVENT: {
-                        Session session = (Session) welcomeEvent.getObject();
+                        Session session = (Session) viewModelEvent.getObject();
                         if (session.apikey == null) {
                             new Handler(Looper.getMainLooper()).post(new Runnable() {
                                 @Override
@@ -64,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
                                 loadingStatus.appendNeutral(getString(R.string.welcome_newclient));
                                 attachRegistationFragment();
                             } else {
+                                isRegistrationPassed = true;
                                 startActivity(new Intent(MainActivity.this,PresentationActivity.class));
                                 finish();
                             }
@@ -72,9 +80,10 @@ public class MainActivity extends AppCompatActivity {
                     }
                     case WelcomeEventsTypes
                             .REGISTRATION_EVENT:{
-                        Boolean registationStatus = (Boolean)welcomeEvent.getObject();
+                        Boolean registationStatus = (Boolean) viewModelEvent.getObject();
                         if(registationStatus!=null&&registationStatus){
                             Toasty.success(MainActivity.this,getResources().getString(R.string.welcome_registrationsuccess), Toasty.LENGTH_SHORT).show();
+                            isRegistrationPassed = true;
                             startActivity(new Intent(MainActivity.this,PresentationActivity.class));
                             finish();
                         } else {
@@ -107,6 +116,8 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
 
     }
+
+
 
     private boolean preparePermissions(){
         if(checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)+
@@ -144,4 +155,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    protected void onDestroy() {
+        if(!isRegistrationPassed){
+            stopService(new Intent(MainActivity.this,PresentationActivity.class));
+            stopService(new Intent(MainActivity.this,PresentationActivity.class));
+        }
+        Log.d("status","on destroy");
+        super.onDestroy();
+    }
 }

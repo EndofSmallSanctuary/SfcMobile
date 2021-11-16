@@ -1,11 +1,11 @@
-package com.example.smarttag.ViewModels.WelcomeScreen;
+package com.example.smarttag.ViewModels;
 
 
-public class WelcomeEvent<T> {
+public class ViewModelEvent<T> {
     int we_type;
     T object;
 
-    public WelcomeEvent(int we_type, T object) {
+    public ViewModelEvent(int we_type, T object) {
         this.we_type = we_type;
         this.object = object;
     }

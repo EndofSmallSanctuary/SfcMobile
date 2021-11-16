@@ -21,4 +21,25 @@
     <string name="settings">Settings</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="scan">Scan</string>
+    <string name="stop">STOP</string>
+    <string name="launching_services">Launching Services</string>
+    <string name="stop_bluetooth_request">Stop bluetooth request</string>
+    <string name="start_bluetooth_request">Start bluetooth request</string>
+    <string name="scan_new_devices">Scan new devices</string>
+    <string name="check_gps_service_status">Check gps service status</string>
+    <string name="status">Status</string>
+    <string name="scan_mode_status">Scan mode status</string>
+    <string name="bluetooth_service_status">Bluetooth service status</string>
+    <string name="gps_service_status">Gps service status</string>
+    <string name="available_devices">Available Devices</string>
+    <string name="request_enabled">Request Enabled</string>
+    <string name="request_disabled">Request disabled</string>
+    <string name="scan_mode_enabled">Scan mode enabled</string>
+    <string name="scan_mode_disabled">Scan mode disabled</string>
+    <string name="gps_status_requested">Gps status requested</string>
+    <string name="gps_location_arrived">Gps location arrived</string>
+    <string name="accuracy">Accuracy:</string>
+    <string name="gps_location_is_null">Gps location is null</string>
+    <string name="not_sending">Not sending</string>
 </resources>

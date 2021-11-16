@@ -1,8 +1,11 @@
 package com.example.smarttag.Api;
 
+import com.example.smarttag.Models.BleDev;
 import com.example.smarttag.Models.DeviceInfo;
 import com.example.smarttag.Models.UserInfo;
 import com.example.smarttag.Session;
+
+import java.util.ArrayList;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -19,4 +22,8 @@ public interface KrotApi {
     @POST("Register")
     Call<Void> registration(@Header("api-key")String apikey,
                             @Query("client_id")Long client_id, @Body UserInfo userInfo);
+
+    @POST("AvailableBleDevs")
+    Call<ArrayList<BleDev>> availablebledevs(@Header("api-key")String apikey,
+                                            @Query("client_id")Long client_id);
 }
