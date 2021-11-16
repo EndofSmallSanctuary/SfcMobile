@@ -12,4 +12,5 @@
     <color name="status_neutral">#c2c0c0</color>
     <color name="status_error">#eb4034</color>
     <color name="status_success">#4fcf2b</color>
+    <color name="fucntions_menu_node_clicked">#e3e3e3</color>
 </resources>

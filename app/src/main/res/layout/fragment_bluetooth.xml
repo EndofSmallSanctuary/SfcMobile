@@ -1,10 +1,13 @@
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="#f0f0f0"
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <include layout="@layout/sfc_action_bar"/>
+
 
     <TextView
         android:id="@+id/Bluetooth.Functions.Header"
@@ -20,12 +23,14 @@
         android:alignmentMode="alignBounds"
         android:rowOrderPreserved="true"
         android:useDefaultMargins="true"
+        android:layout_marginTop="10dp"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <LinearLayout
+            android:id="@+id/Bluetooth.Functions.StartRequest"
             style="@style/FunctionsMenuNode">
 
             <ImageView
@@ -33,9 +38,10 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"/>
             <TextView
+                android:id="@+id/Bluetooth.Functions.StartRequest.Text"
                 android:layout_marginTop="10dp"
                 android:textAlignment="center"
-                android:text="Start bluetooth request"
+                android:text="@string/start_bluetooth_request"
                 android:fontFamily="@font/roboto_bold"
                 android:textColor="@color/black"
                 android:layout_width="wrap_content"
@@ -43,6 +49,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/Bluetooth.Functions.ScanNewDevs"
             style="@style/FunctionsMenuNode">
 
             <ImageView
@@ -52,7 +59,7 @@
             <TextView
                 android:layout_marginTop="10dp"
                 android:textAlignment="center"
-                android:text="Scan new  devices"
+                android:text="@string/scan_new_devices"
                 android:fontFamily="@font/roboto_bold"
                 android:textColor="@color/black"
                 android:layout_width="wrap_content"
@@ -60,6 +67,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/Bluetooth.Functions.UpdateGps"
             style="@style/FunctionsMenuNode">
 
             <ImageView
@@ -69,7 +77,7 @@
             <TextView
                 android:layout_marginTop="10dp"
                 android:textAlignment="center"
-                android:text="Check gps service status"
+                android:text="@string/check_gps_service_status"
                 android:fontFamily="@font/roboto_bold"
                 android:textColor="@color/black"
                 android:layout_width="wrap_content"
@@ -77,13 +85,90 @@
         </LinearLayout>
     </GridLayout>
 
-<TextView
-    android:text="Available Devices"
-    style="@style/FunctionsHeaderText"
-    app:layout_constraintLeft_toLeftOf="parent"
-    app:layout_constraintTop_toBottomOf="@id/Bluetooth.Functions.Grid"/>
+    <TextView
+        android:id="@+id/Bluetooth.Status.Header"
+        style="@style/FunctionsHeaderText"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:text="@string/status"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <GridLayout
+        android:columnCount="3"
+        android:useDefaultMargins="true"
+        android:background="@color/white"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="150dp">
+
+        <LinearLayout
+            style="@style/FunctionsStatusNode">
+
+            <ImageView
+                android:id="@+id/Bluetooth.Status.Scan"
+                android:src="@drawable/status_error"
+                android:layout_width="40dp"
+                android:layout_height="40dp"/>
+            <TextView
+                android:layout_marginTop="10dp"
+                android:textAlignment="center"
+                android:text="@string/scan_mode_status"
+                android:fontFamily="@font/roboto_bold"
+                android:textColor="@color/black"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+
+        <LinearLayout
+            style="@style/FunctionsStatusNode">
+
+            <ImageView
+                android:id="@+id/Bluetooth.Status.BleService"
+                android:src="@drawable/status_error"
+                android:layout_width="40dp"
+                android:layout_height="40dp"/>
+            <TextView
+                android:layout_marginTop="10dp"
+                android:textAlignment="center"
+                android:text="@string/bluetooth_service_status"
+                android:fontFamily="@font/roboto_bold"
+                android:textColor="@color/black"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <LinearLayout
+            style="@style/FunctionsStatusNode">
+
+            <ImageView
+                android:id="@+id/Bluetooth.Status.GpsService"
+                android:src="@drawable/status_error"
+                android:layout_width="40dp"
+                android:layout_height="40dp"/>
+            <TextView
+                android:layout_marginTop="10dp"
+                android:textAlignment="center"
+                android:text="@string/gps_service_status"
+                android:fontFamily="@font/roboto_bold"
+                android:textColor="@color/black"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+    </GridLayout>
+
+
+    <TextView
+        android:text="@string/available_devices"
+        style="@style/FunctionsHeaderText"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/Bluetooth.Functions.Grid"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+</LinearLayout>
 
 <!--    <com.example.smarttag.Views.Components.PulsatingImage-->
 <!--        android:id="@+id/Bluetooth.PulsatingImage"-->

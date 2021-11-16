@@ -3,16 +3,20 @@ package com.example.smarttag.RetrofitRepositories;
 import android.util.Log;
 
 import com.example.smarttag.Api.KrotApi;
+import com.example.smarttag.Models.BleDev;
 import com.example.smarttag.Models.DeviceInfo;
 import com.example.smarttag.Models.UserInfo;
 import com.example.smarttag.Session;
 import com.example.smarttag.Utils.HTTPCODES;
-import com.example.smarttag.ViewModels.WelcomeScreen.WelcomeEvent;
+import com.example.smarttag.ViewModels.BluetoothFragment.BluetoothEventsTypes;
+import com.example.smarttag.ViewModels.BluetoothFragment.BluetoothViewModel;
+import com.example.smarttag.ViewModels.ViewModelEvent;
 import com.example.smarttag.ViewModels.WelcomeScreen.WelcomeEventsTypes;
 import com.example.smarttag.ViewModels.WelcomeScreen.WelcomeViewModel;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -49,9 +53,9 @@ public class KrotRepository {
             HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
             loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
             OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
-            httpClient.connectTimeout(14, TimeUnit.SECONDS);
-            httpClient.writeTimeout(14, TimeUnit.SECONDS);
-            httpClient.readTimeout(14, TimeUnit.SECONDS);
+            httpClient.connectTimeout(5, TimeUnit.SECONDS);
+            httpClient.writeTimeout(5, TimeUnit.SECONDS);
+            httpClient.readTimeout(5, TimeUnit.SECONDS);
 
             Gson gson = new GsonBuilder()
                     .setLenient()
@@ -75,7 +79,7 @@ public class KrotRepository {
                 if(response.isSuccessful()||response.code()== HTTPCODES.HTTP_CODES_OK) {
                     openedSession = response.body();
                     viewModel.onRequestPerformed(
-                            new WelcomeEvent(WelcomeEventsTypes.SESSION_EVENT,response.body()));
+                            new ViewModelEvent(WelcomeEventsTypes.SESSION_EVENT,response.body()));
                 }  else {
                     viewModel.onRequestPerformed(null);
                 }
@@ -100,9 +104,9 @@ public class KrotRepository {
                 @Override
                 public void onResponse(Call call, Response response) {
                     if(response.isSuccessful()||response.code()==HTTPCODES.HTTP_CODES_OK){
-                        viewModel.onRequestPerformed(new WelcomeEvent(WelcomeEventsTypes.REGISTRATION_EVENT,true));
+                        viewModel.onRequestPerformed(new ViewModelEvent(WelcomeEventsTypes.REGISTRATION_EVENT,true));
                     } else{
-                        viewModel.onRequestPerformed(new WelcomeEvent(WelcomeEventsTypes.REGISTRATION_EVENT,false));
+                        viewModel.onRequestPerformed(new ViewModelEvent(WelcomeEventsTypes.REGISTRATION_EVENT,false));
                     }
 
                 }
@@ -110,9 +114,35 @@ public class KrotRepository {
                 @Override
                 public void onFailure(Call call, Throwable t) {
                     Log.d("dogs",t.getMessage());
-                    viewModel.onRequestPerformed(new WelcomeEvent(WelcomeEventsTypes.REGISTRATION_EVENT,false));
+                    viewModel.onRequestPerformed(new ViewModelEvent(WelcomeEventsTypes.REGISTRATION_EVENT,false));
                 }
             });
         }
+    }
+
+    public void getAvailableBleDevs(BluetoothViewModel bluetoothViewModel){
+        if(openedSession!=null){
+            Call<ArrayList<BleDev>> bledevscall = krotApi.availablebledevs(openedSession.getApikey(),openedSession.getClient_id());
+            bledevscall.enqueue(new Callback<ArrayList<BleDev>>() {
+                @Override
+                public void onResponse(Call<ArrayList<BleDev>> call, Response<ArrayList<BleDev>> response) {
+                    if(response.isSuccessful()||response.code()==HTTPCODES.HTTP_CODES_OK){
+                        bluetoothViewModel.onRequestPerformed(new ViewModelEvent(BluetoothEventsTypes.AVAILABLE_DEVS,
+                                response.body()));
+                    } else {
+                        bluetoothViewModel.onRequestPerformed(new ViewModelEvent(BluetoothEventsTypes.AVAILABLE_DEVS,
+                                null));
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ArrayList<BleDev>> call, Throwable t) {
+                    Log.d("dogs",t.getMessage());
+                    bluetoothViewModel.onRequestPerformed(new ViewModelEvent(BluetoothEventsTypes.AVAILABLE_DEVS,
+                            null));
+                }
+            });
+        }
+
     }
 }

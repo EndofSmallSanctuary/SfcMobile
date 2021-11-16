@@ -1,34 +1,32 @@
 package com.example.smarttag.ViewModels.WelcomeScreen;
 
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
 import com.example.smarttag.Models.UserInfo;
-import com.example.smarttag.RetrofitRepositories.KrotRepository;
 import com.example.smarttag.Session;
+import com.example.smarttag.ViewModels.SharedViewModel;
+import com.example.smarttag.ViewModels.ViewModelEvent;
 
-public class WelcomeViewModel extends ViewModel {
-    MutableLiveData<WelcomeEvent> sessionLiveData = new MutableLiveData<>();
-    KrotRepository krotRepository = KrotRepository.getInstance();
+public class WelcomeViewModel extends SharedViewModel {
 
     public void startSesion(){
          krotRepository.startSession(this);
     }
 
-    public MutableLiveData<WelcomeEvent> getSessionLiveData() {
-        return sessionLiveData;
+    public MutableLiveData<ViewModelEvent> getSessionLiveData() {
+        return sharedliveData;
     }
 
     public void registrateSomebruh(UserInfo userInfo){
         krotRepository.registerUserInfo(userInfo,this);
     }
 
-    public void onRequestPerformed(WelcomeEvent body) {
+    public void onRequestPerformed(ViewModelEvent body) {
         if(body!=null){
-            sessionLiveData.postValue(body);
+            sharedliveData.postValue(body);
         } else {
-            sessionLiveData.postValue(
-                    new WelcomeEvent(
+            sharedliveData.postValue(
+                    new ViewModelEvent(
                             WelcomeEventsTypes.SESSION_EVENT,
                             new Session()
                     )
