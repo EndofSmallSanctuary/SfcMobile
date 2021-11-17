@@ -1,6 +1,5 @@
 package com.example.smarttag.Views;
 
-import android.location.Location;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -23,14 +22,12 @@ import com.example.smarttag.PresentationActivity;
 import com.example.smarttag.R;
 import com.example.smarttag.ViewModels.BluetoothFragment.BluetoothEventsTypes;
 import com.example.smarttag.ViewModels.BluetoothFragment.BluetoothViewModel;
-import com.example.smarttag.ViewModels.BluetoothFragment.ForegroundEvent;
+import com.example.smarttag.ViewModels.Presentation.ForegroundEvent;
 import com.example.smarttag.ViewModels.ViewModelEvent;
 import com.example.smarttag.Views.Adapters.BluetoothDevsAdapter;
 import com.example.smarttag.Views.Adapters.ForegroundEventsAdapter;
 
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

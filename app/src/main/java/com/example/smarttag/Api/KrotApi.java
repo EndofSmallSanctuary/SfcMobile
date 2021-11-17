@@ -2,6 +2,7 @@ package com.example.smarttag.Api;
 
 import com.example.smarttag.Models.BleDev;
 import com.example.smarttag.Models.DeviceInfo;
+import com.example.smarttag.Models.GpsEvt;
 import com.example.smarttag.Models.UserInfo;
 import com.example.smarttag.Session;
 
@@ -26,4 +27,10 @@ public interface KrotApi {
     @POST("AvailableBleDevs")
     Call<ArrayList<BleDev>> availablebledevs(@Header("api-key")String apikey,
                                             @Query("client_id")Long client_id);
+
+    @POST("NewGpsEvent")
+    Call<Boolean> newgpsevents(@Header("api-key")String apikey,
+                               @Query("client_id") Long client_id,
+                               @Body GpsEvt gpsEvt);
 }
+

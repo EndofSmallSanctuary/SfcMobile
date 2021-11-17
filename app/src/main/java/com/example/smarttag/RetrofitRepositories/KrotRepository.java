@@ -5,11 +5,13 @@ import android.util.Log;
 import com.example.smarttag.Api.KrotApi;
 import com.example.smarttag.Models.BleDev;
 import com.example.smarttag.Models.DeviceInfo;
+import com.example.smarttag.Models.GpsEvt;
 import com.example.smarttag.Models.UserInfo;
 import com.example.smarttag.Session;
 import com.example.smarttag.Utils.HTTPCODES;
 import com.example.smarttag.ViewModels.BluetoothFragment.BluetoothEventsTypes;
 import com.example.smarttag.ViewModels.BluetoothFragment.BluetoothViewModel;
+import com.example.smarttag.ViewModels.Presentation.PresentationViewModel;
 import com.example.smarttag.ViewModels.ViewModelEvent;
 import com.example.smarttag.ViewModels.WelcomeScreen.WelcomeEventsTypes;
 import com.example.smarttag.ViewModels.WelcomeScreen.WelcomeViewModel;
@@ -30,7 +32,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class KrotRepository {
     private static final String  baseurl = "https://sfc.rniirs.ru/Api/";
 
-   // private static final String  baseurl = "http://192.168.0.100:8080/";
+  //  private static final String  baseurl = "http://192.168.0.100:8080/";
 
     private KrotApi krotApi;
     private Session openedSession;
@@ -141,6 +143,24 @@ public class KrotRepository {
                     Log.d("dogs",t.getMessage());
                     bluetoothViewModel.onRequestPerformed(new ViewModelEvent(BluetoothEventsTypes.AVAILABLE_DEVS,
                             null));
+                }
+            });
+        }
+
+    }
+
+    public void sendNewGpsEvent(GpsEvt gpsEvt, PresentationViewModel presentationViewModel){
+        if(openedSession!=null){
+            Call<Boolean> newGpsCall = krotApi.newgpsevents(openedSession.getApikey(), openedSession.getClient_id(), gpsEvt);
+            newGpsCall.enqueue(new Callback<Boolean>() {
+                @Override
+                public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+
+                }
+
+                @Override
+                public void onFailure(Call<Boolean> call, Throwable t) {
+                    Log.d("dogs",t.getMessage());
                 }
             });
         }

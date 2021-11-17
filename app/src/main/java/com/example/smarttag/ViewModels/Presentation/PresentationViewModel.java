@@ -1,8 +1,6 @@
-package com.example.smarttag.ViewModels;
+package com.example.smarttag.ViewModels.Presentation;
 
-import androidx.lifecycle.ViewModel;
-
-import com.example.smarttag.ViewModels.BluetoothFragment.ForegroundEvent;
+import com.example.smarttag.ViewModels.SharedViewModel;
 
 import java.util.ArrayList;
 
@@ -16,7 +14,6 @@ public class PresentationViewModel extends SharedViewModel {
         }
         foregroundEvents.add(0,event);
         return 0;
-
     }
 
     public ArrayList<ForegroundEvent> getForegroundEvents() {

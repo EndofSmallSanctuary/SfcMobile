@@ -1,4 +1,4 @@
-package com.example.smarttag.ViewModels.BluetoothFragment;
+package com.example.smarttag.ViewModels.Presentation;
 
 import android.annotation.SuppressLint;
 import android.graphics.drawable.Drawable;
@@ -23,6 +23,7 @@ public class ForegroundEvent {
     String  eventName;
     String eventDesc;
 
+
     public ForegroundEvent(Drawable status_icon, String eventName, String eventDesc) {
         this.status_icon = status_icon;
         @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm.ss");
@@ -45,6 +46,12 @@ public class ForegroundEvent {
 
     public String getLocalDateTime() {
         return localDateTime;
+    }
+
+    public static String milisToStrDate (Long milis){
+        Date toDate = new Date(milis);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm.ss");
+        return dateFormat.format(toDate);
     }
 
 }

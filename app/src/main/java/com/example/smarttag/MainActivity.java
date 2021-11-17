@@ -100,7 +100,11 @@ public class MainActivity extends AppCompatActivity {
     private void onPermissionsGranted() {
         loadingStatus.appendNeutral(getString(R.string.welcome_retrievingdevinfo));
         loadingStatus.appendNeutral(getString(R.string.launching_services));
-        startService(new Intent(this, GpsService.class));
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            startForegroundService(new Intent(this, GpsService.class));
+        else
+            startService(new Intent(this,GpsService.class));
+
         startService(new Intent(this, BluetoothService.class));
         loadingStatus.appendNeutral(getString(R.string.welcome_connectionestablish));
         viewModel.startSesion();
@@ -127,9 +131,10 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    //TODO Should work around it later!!!
+
     private boolean preparePermissions(){
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if(checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)+
                     checkSelfPermission(Manifest.permission.BLUETOOTH)+
                     checkSelfPermission(Manifest.permission.BLUETOOTH_ADMIN)+
@@ -137,38 +142,43 @@ public class MainActivity extends AppCompatActivity {
                     checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)+
                     checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)+
                     checkSelfPermission(Manifest.permission.FOREGROUND_SERVICE)        != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.BLUETOOTH,
-                        Manifest.permission.BLUETOOTH_ADMIN,
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.FOREGROUND_SERVICE,
-                        Manifest.permission.ACCESS_BACKGROUND_LOCATION+
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                }, 1);
-            } else {
-                loadingStatus.appendSuccess(getString(R.string.weclome_permissionsgranted));
-                return true;
-            }
-        } else {
-            if(checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)+
-                    checkSelfPermission(Manifest.permission.BLUETOOTH)+
-                    checkSelfPermission(Manifest.permission.BLUETOOTH_ADMIN)+
-                    checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)+
-                    checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.BLUETOOTH,
-                        Manifest.permission.BLUETOOTH_ADMIN,
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                }, 1);
-            } else {
-                loadingStatus.appendSuccess(getString(R.string.weclome_permissionsgranted));
-                return true;
-            }
-        }
 
+                if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.Q){
+                    Log.d("status","Im here");
+                    requestPermissions(new String[]{
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.BLUETOOTH,
+                            Manifest.permission.BLUETOOTH_ADMIN,
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.FOREGROUND_SERVICE,
+                            Manifest.permission.ACCESS_COARSE_LOCATION
+                    }, 1);
+                } else if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.P){
+                    Log.d("status","Im there");
+                        requestPermissions(new String[]{
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                Manifest.permission.BLUETOOTH,
+                                Manifest.permission.BLUETOOTH_ADMIN,
+                                Manifest.permission.ACCESS_FINE_LOCATION,
+                                Manifest.permission.FOREGROUND_SERVICE,
+                                Manifest.permission.ACCESS_COARSE_LOCATION
+                        }, 1);
+                } else {
+                    Log.d("status","Im somewhere");
+                    requestPermissions(new String[]{
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.BLUETOOTH,
+                            Manifest.permission.BLUETOOTH_ADMIN,
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION
+                    }, 1);
+                }
+
+
+            } else {
+                loadingStatus.appendSuccess(getString(R.string.weclome_permissionsgranted));
+                return true;
+            }
 
         return false;
     }
@@ -186,7 +196,15 @@ public class MainActivity extends AppCompatActivity {
                         return;
                }
             }
-            onPermissionsGranted();
+            if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.R){
+                if(checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)!=PackageManager.PERMISSION_GRANTED){
+                    requestPermissions(new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION},1);
+                } else {
+                    onPermissionsGranted();
+                }
+            } else {
+                onPermissionsGranted();
+            }
         }
     }
 

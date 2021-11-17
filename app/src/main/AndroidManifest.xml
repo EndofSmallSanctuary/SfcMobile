@@ -35,7 +35,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".Services.BluetoothService"/>
+        <service android:foregroundServiceType="location" android:name=".Services.BluetoothService"/>
         <service android:name=".Services.GpsService"/>
 
     </application>

@@ -42,4 +42,7 @@
     <string name="accuracy">Accuracy:</string>
     <string name="gps_location_is_null">Gps location is null</string>
     <string name="not_sending">Not sending</string>
+    <string name="gps_service_is_live">Gps service is live</string>
+    <string name="location_expired">Location Expired</string>
+    <string name="smart_tag_message">Smart Tag message</string>
 </resources>

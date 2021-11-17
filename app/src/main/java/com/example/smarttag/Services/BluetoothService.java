@@ -1,5 +1,9 @@
 package com.example.smarttag.Services;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -8,19 +12,23 @@ import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.smarttag.Models.BleEvt;
+import com.example.smarttag.R;
 
 import java.util.Date;
 
 import es.dmoral.toasty.Toasty;
 
 public class BluetoothService extends Service {
+    private final String CHANNEL_ID = "BlUETOOTH_SERVICE";
     Boolean isBinded = false;
     Boolean isInRequest = false;
     Boolean isAlive = false;
@@ -28,40 +36,41 @@ public class BluetoothService extends Service {
     BluetoothLeScanner scanner;
     private final IBinder binder = new BluetoothBinder();
 
-    ScanCallback scanCallback = new ScanCallback() {
+    final ScanCallback scanCallback = new ScanCallback() {
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
             super.onScanResult(callbackType, result);
             BluetoothDevice bluetoothDevice = result.getDevice();
-            if(bluetoothDevice!=null){
-                if(bluetoothDevice.getName()!=null&&bluetoothDevice.getName().toLowerCase().contains("smart_tag")){
+            if (bluetoothDevice != null) {
+                if (bluetoothDevice.getName() != null && bluetoothDevice.getName().toLowerCase().contains("smart_tag")) {
                     BluetoothDevice device = result.getDevice();
-                    if(device.getName()!=null&&device.getName().toLowerCase().contains("smart")){
-                        byte[] bytes =  result.getScanRecord().getBytes();
+                    if (device.getName() != null && device.getName().toLowerCase().contains("smart")) {
+                        byte[] bytes = result.getScanRecord().getBytes();
                         byte[] msg = new byte[4];
                         msg[0] = bytes[8];
                         msg[1] = bytes[9];
                         msg[2] = bytes[10];
                         msg[3] = bytes[11];
-                        Integer readyMsg = byteArrayToInt(msg);
-                        Toasty.success(getApplicationContext(),"ASD",Toasty.LENGTH_SHORT).show();
+                        int readyMsg = byteArrayToInt(msg);
                         Intent intent = new Intent("ACTION_SMART_TAG");
                         BleEvt bleEvt = new BleEvt();
                         bleEvt.setBleEvt_RSSI((long) result.getRssi());
-                        bleEvt.setBleEvt_NumMsg(Long.valueOf(readyMsg));
+                        bleEvt.setBleEvt_NumMsg((long) readyMsg);
                         bleEvt.setBleEvt_Time(new Date().getTime());
-                        intent.putExtra("payload",bleEvt);
+                        intent.putExtra("dev_mac", device.getAddress());
+                        intent.putExtra("dev_name", device.getName());
+                        intent.putExtra("payload", bleEvt);
                         sendBroadcast(intent);
                     }
                 }
             }
         }
+
         @Override
         public void onScanFailed(int errorCode) {
             super.onScanFailed(errorCode);
         }
     };
-
 
 
 
@@ -131,6 +140,7 @@ public class BluetoothService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        openNotificationChannel();
         isAlive = true;
         return START_STICKY;
     }
@@ -140,4 +150,17 @@ public class BluetoothService extends Service {
         isAlive = false;
         super.onDestroy();
     }
+
+    private void openNotificationChannel(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            NotificationChannel innerServiceChannel = new NotificationChannel(
+                    CHANNEL_ID,
+                    "Bluetooth Service Channel",
+                    NotificationManager.IMPORTANCE_DEFAULT
+            );
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(innerServiceChannel);
+        }
+    }
+
 }

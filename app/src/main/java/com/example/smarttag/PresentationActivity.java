@@ -20,8 +20,8 @@ import android.view.MenuItem;
 import com.example.smarttag.Models.BleEvt;
 import com.example.smarttag.Services.BluetoothService;
 import com.example.smarttag.Services.GpsService;
-import com.example.smarttag.ViewModels.BluetoothFragment.ForegroundEvent;
-import com.example.smarttag.ViewModels.PresentationViewModel;
+import com.example.smarttag.ViewModels.Presentation.ForegroundEvent;
+import com.example.smarttag.ViewModels.Presentation.PresentationViewModel;
 import com.example.smarttag.Views.BluetoothFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
@@ -32,9 +32,10 @@ import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import es.dmoral.toasty.Toasty;
 
 public class PresentationActivity extends AppCompatActivity {
+
+
 
     @BindView(R.id.sfc_navigation_bar)
     BottomNavigationView navigationView;
@@ -85,8 +86,10 @@ public class PresentationActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             try {
                 BleEvt bleEvt = intent.getParcelableExtra("payload");
+                String devName = intent.getStringExtra("dev_name");
                 if(bleEvt!=null){
-                    Toasty.success(PresentationActivity.this,bleEvt.getBleEvt_NumMsg()+"",Toasty.LENGTH_SHORT).show();
+                    onNewForegroundEvent(new ForegroundEvent(ContextCompat.getDrawable(PresentationActivity.this,R.drawable.bluetooth),"Smart Tag event",
+                            devName+" has sent "+bleEvt.getBleEvt_NumMsg() + "msg"));
                 }
             } catch (Exception e){
                 Log.d("status",e.getMessage());
@@ -109,13 +112,23 @@ public class PresentationActivity extends AppCompatActivity {
                 if(getGpsServiceStatus()){
                     Location location = getActualLocation();
                     if(location!=null){
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                prepareSignatureRequest(ForegroundEvent.FOREGROUND_EVENT_TYPE_GPS,
-                                        getString(R.string.gps_location_arrived),"Lat: "+location.getLatitude()+" "+"Long: "+location.getLongitude());
-                            }
-                        });
+                        if(gpsService.validateLocation(location)) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    prepareSignatureRequest(ForegroundEvent.FOREGROUND_EVENT_TYPE_GPS,
+                                            getString(R.string.gps_location_arrived), "Data packet came at: " + ForegroundEvent.milisToStrDate(location.getTime()));
+                                }
+                            });
+                        } else {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    prepareSignatureRequest(ForegroundEvent.FOREGROUND_EVENT_TYPE_GPS,
+                                          getString(R.string.location_expired), "Last packet came at: " + ForegroundEvent.milisToStrDate(location.getTime()));
+                                }
+                            });
+                        }
                     } else {
                         runOnUiThread(new Runnable() {
                             @Override
@@ -157,6 +170,7 @@ public class PresentationActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        gpsTimer.cancel();
         unregisterReceiver(eventReciever);
         unbindService(bluetoothServiceConnection);
         unbindService(gpsServiceConnection);
@@ -215,6 +229,7 @@ public class PresentationActivity extends AppCompatActivity {
         }
 
     }
+
 
 
 
