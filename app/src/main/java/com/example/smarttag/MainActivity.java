@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModelProvider;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -127,22 +128,48 @@ public class MainActivity extends AppCompatActivity {
 
 
     private boolean preparePermissions(){
-        if(checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)+
-        checkSelfPermission(Manifest.permission.BLUETOOTH)+
-        checkSelfPermission(Manifest.permission.BLUETOOTH_ADMIN)+
-        checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)+
-        checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.BLUETOOTH,
-                    Manifest.permission.BLUETOOTH_ADMIN,
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-            }, 1);
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            if(checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)+
+                    checkSelfPermission(Manifest.permission.BLUETOOTH)+
+                    checkSelfPermission(Manifest.permission.BLUETOOTH_ADMIN)+
+                    checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)+
+                    checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)+
+                    checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)+
+                    checkSelfPermission(Manifest.permission.FOREGROUND_SERVICE)        != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.BLUETOOTH,
+                        Manifest.permission.BLUETOOTH_ADMIN,
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.FOREGROUND_SERVICE,
+                        Manifest.permission.ACCESS_BACKGROUND_LOCATION+
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                }, 1);
+            } else {
+                loadingStatus.appendSuccess(getString(R.string.weclome_permissionsgranted));
+                return true;
+            }
         } else {
-            loadingStatus.appendSuccess(getString(R.string.weclome_permissionsgranted));
-            return true;
+            if(checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)+
+                    checkSelfPermission(Manifest.permission.BLUETOOTH)+
+                    checkSelfPermission(Manifest.permission.BLUETOOTH_ADMIN)+
+                    checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)+
+                    checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.BLUETOOTH,
+                        Manifest.permission.BLUETOOTH_ADMIN,
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                }, 1);
+            } else {
+                loadingStatus.appendSuccess(getString(R.string.weclome_permissionsgranted));
+                return true;
+            }
         }
+
+
         return false;
     }
 
