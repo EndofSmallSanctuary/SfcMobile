@@ -20,10 +20,13 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.example.smarttag.Models.BleDev;
 import com.example.smarttag.Models.BleEvt;
 import com.example.smarttag.R;
 
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import es.dmoral.toasty.Toasty;
 
@@ -32,6 +35,7 @@ public class BluetoothService extends Service {
     Boolean isBinded = false;
     Boolean isInRequest = false;
     Boolean isAlive = false;
+    Timer timer = new Timer();
     Boolean scan_mode = false;
     BluetoothLeScanner scanner;
     private final IBinder binder = new BluetoothBinder();
@@ -52,13 +56,14 @@ public class BluetoothService extends Service {
                         msg[2] = bytes[10];
                         msg[3] = bytes[11];
                         int readyMsg = byteArrayToInt(msg);
+
+
                         Intent intent = new Intent("ACTION_SMART_TAG");
-                        BleEvt bleEvt = new BleEvt();
-                        bleEvt.setBleEvt_RSSI((long) result.getRssi());
-                        bleEvt.setBleEvt_NumMsg((long) readyMsg);
-                        bleEvt.setBleEvt_Time(new Date().getTime());
-                        intent.putExtra("dev_mac", device.getAddress());
-                        intent.putExtra("dev_name", device.getName());
+                        BleEvt bleEvt = new BleEvt((long)result.getRssi(),new Date(),0.0d,0.0d,0.0d,(long)readyMsg,scan_mode);
+                        BleDev bleDev = new BleDev();
+                        bleDev.setBleDev_MAC(result.getDevice().getAddress());
+                        bleDev.setBleDev_Name(result.getDevice().getName());
+                        bleEvt.setBleDev(bleDev);
                         intent.putExtra("payload", bleEvt);
                         sendBroadcast(intent);
                     }
@@ -117,7 +122,6 @@ public class BluetoothService extends Service {
             }
         } catch (Exception e ){
             isInRequest = false;
-            Log.d("dogs",e.getMessage());
         }
     }
 
@@ -138,9 +142,24 @@ public class BluetoothService extends Service {
 
     }
 
+
+    /*TODO Why not to add notifications later :?*/
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        openNotificationChannel();
+//        openNotificationChannel();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                Intent intent = new Intent("ACTION_SMART_TAG");
+                BleEvt bleEvt = new BleEvt((long)121,new Date(),0.0d,0.0d,0.0d,(long)100,scan_mode);
+                BleDev bleDev = new BleDev();
+                bleDev.setBleDev_MAC("DE:FE:CF:86:AC:10");
+                bleDev.setBleDev_Name("Sample Device");
+                bleEvt.setBleDev(bleDev);
+                intent.putExtra("payload", bleEvt);
+                sendBroadcast(intent);
+            }
+        },3000,3000);
         isAlive = true;
         return START_STICKY;
     }
@@ -148,6 +167,7 @@ public class BluetoothService extends Service {
     @Override
     public void onDestroy() {
         isAlive = false;
+        timer.cancel();
         super.onDestroy();
     }
 

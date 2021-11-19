@@ -3,6 +3,7 @@ package com.example.smarttag;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.BroadcastReceiver;
@@ -18,10 +19,13 @@ import android.util.Log;
 import android.view.MenuItem;
 
 import com.example.smarttag.Models.BleEvt;
+import com.example.smarttag.Models.GpsEvent;
 import com.example.smarttag.Services.BluetoothService;
 import com.example.smarttag.Services.GpsService;
 import com.example.smarttag.ViewModels.Presentation.ForegroundEvent;
+import com.example.smarttag.ViewModels.Presentation.PresentationEventsTypes;
 import com.example.smarttag.ViewModels.Presentation.PresentationViewModel;
+import com.example.smarttag.ViewModels.ViewModelEvent;
 import com.example.smarttag.Views.BluetoothFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
@@ -86,10 +90,20 @@ public class PresentationActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             try {
                 BleEvt bleEvt = intent.getParcelableExtra("payload");
-                String devName = intent.getStringExtra("dev_name");
                 if(bleEvt!=null){
-                    onNewForegroundEvent(new ForegroundEvent(ContextCompat.getDrawable(PresentationActivity.this,R.drawable.bluetooth),"Smart Tag event",
-                            devName+" has sent "+bleEvt.getBleEvt_NumMsg() + "msg"));
+                    Location location = gpsService.getActualLocation();
+                    if(gpsService.validateLocation(location)) {
+                        onNewForegroundEvent(new ForegroundEvent(ContextCompat.getDrawable(PresentationActivity.this, R.drawable.bluetooth), "Smart Tag event",
+                                bleEvt.getBleDev().getBleDev_Name() + " has sent " + bleEvt.getBleEvt_NumMsg() + "msg\n" + " Sending it with actual date"));
+                        bleEvt.setBleEvt_Lat(location.getLatitude());
+                        bleEvt.setBleEvt_Long(location.getLongitude());
+                        bleEvt.setBleEvt_Alt(location.getAltitude());
+                    } else {
+                        onNewForegroundEvent(new ForegroundEvent(ContextCompat.getDrawable(PresentationActivity.this, R.drawable.bluetooth), "Smart Tag event",
+                                bleEvt.getBleDev().getBleDev_Name() + " has sent " + bleEvt.getBleEvt_NumMsg() + "msg\n" + " Will be sent with 0.0.0 coordinates due to expired date"));
+                    }
+
+                    viewmodel.sendNewBleEvent(bleEvt);
                 }
             } catch (Exception e){
                 Log.d("status",e.getMessage());
@@ -103,8 +117,39 @@ public class PresentationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_presentation);
         ButterKnife.bind(this);
-        viewmodel = new ViewModelProvider(this).get(PresentationViewModel.class);
         registerReceiver(eventReciever,new IntentFilter("ACTION_SMART_TAG"));
+        viewmodel = new ViewModelProvider(this).get(PresentationViewModel.class);
+        viewmodel.getProcessingEvents().observe(this, new Observer<ViewModelEvent>() {
+            @Override
+            public void onChanged(ViewModelEvent viewModelEvent) {
+                switch (viewModelEvent.getWe_type()){
+                    case PresentationEventsTypes
+                            .GPS_EVENT : {
+                        Boolean eventResult = (Boolean) viewModelEvent.getObject();
+                        if(eventResult!=null)
+                            onNewForegroundEvent(new ForegroundEvent(ContextCompat.getDrawable(PresentationActivity.this,R.drawable.location),
+                                    "Gps event transfer",eventResult.toString()));
+                        else {
+                            onNewForegroundEvent(new ForegroundEvent(ContextCompat.getDrawable(PresentationActivity.this,R.drawable.location),
+                                    "Gps event transfer","Poor connection detected. Delivery not warranted "));
+                        }
+                        break;
+                    }
+                    case PresentationEventsTypes.BLUETOOTH_EVENT: {
+                        Integer bluetoothResult = (Integer) viewModelEvent.getObject();
+                        if(bluetoothResult == PresentationEventsTypes.BLUETOOTH_EVENT_PLUS){
+                            BluetoothFragment bluetoothFragment = (BluetoothFragment) getSupportFragmentManager().findFragmentByTag("ble_fragment");
+                            if(bluetoothFragment!=null) {
+                                bluetoothFragment.onNewDeviceAllowed();
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        });
+
+
 
         gpsTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -118,6 +163,7 @@ public class PresentationActivity extends AppCompatActivity {
                                 public void run() {
                                     prepareSignatureRequest(ForegroundEvent.FOREGROUND_EVENT_TYPE_GPS,
                                             getString(R.string.gps_location_arrived), "Data packet came at: " + ForegroundEvent.milisToStrDate(location.getTime()));
+                                    viewmodel.SendNewGpsEvent(new GpsEvent(location.getTime(),location.getLatitude(),location.getLongitude(),location.getAltitude()));
                                 }
                             });
                         } else {
@@ -157,7 +203,6 @@ public class PresentationActivity extends AppCompatActivity {
         navigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                Log.d("Item",item.getItemId()+"");
                 switch (item.getItemId()){
 
                 }

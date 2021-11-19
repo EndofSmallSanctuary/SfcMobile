@@ -4,13 +4,15 @@ import android.util.Log;
 
 import com.example.smarttag.Api.KrotApi;
 import com.example.smarttag.Models.BleDev;
+import com.example.smarttag.Models.BleEvt;
 import com.example.smarttag.Models.DeviceInfo;
-import com.example.smarttag.Models.GpsEvt;
+import com.example.smarttag.Models.GpsEvent;
 import com.example.smarttag.Models.UserInfo;
 import com.example.smarttag.Session;
 import com.example.smarttag.Utils.HTTPCODES;
 import com.example.smarttag.ViewModels.BluetoothFragment.BluetoothEventsTypes;
 import com.example.smarttag.ViewModels.BluetoothFragment.BluetoothViewModel;
+import com.example.smarttag.ViewModels.Presentation.PresentationEventsTypes;
 import com.example.smarttag.ViewModels.Presentation.PresentationViewModel;
 import com.example.smarttag.ViewModels.ViewModelEvent;
 import com.example.smarttag.ViewModels.WelcomeScreen.WelcomeEventsTypes;
@@ -30,17 +32,17 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class KrotRepository {
-    private static final String  baseurl = "https://sfc.rniirs.ru/Api/";
+   // protected String  baseurl = "https://sfc.rniirs.ru/Api/";
 
-   //private static final String  baseurl = "http://192.168.0.100:8080/";
+   private static final String  baseurl = "http://192.168.0.100:8080/";
 
-    private KrotApi krotApi;
-    private Session openedSession;
-    private static Retrofit retrofit;
+    protected KrotApi krotApi;
+    protected Session openedSession;
+    protected Retrofit retrofit;
     private static KrotRepository instance;
 
 
-    private KrotRepository(){
+    protected KrotRepository(){
        init();
     }
 
@@ -52,7 +54,7 @@ public class KrotRepository {
     }
 
     private void init(){
-        if(retrofit ==null){
+        if(retrofit == null){
             HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
             loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
             OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
@@ -89,7 +91,6 @@ public class KrotRepository {
             }
             @Override
             public void onFailure(Call<Session> call, Throwable t) {
-                Log.d("dogs",t.getMessage());
                 viewModel.onRequestPerformed(null);
             }
         });
@@ -116,7 +117,6 @@ public class KrotRepository {
 
                 @Override
                 public void onFailure(Call call, Throwable t) {
-                    Log.d("dogs",t.getMessage());
                     viewModel.onRequestPerformed(new ViewModelEvent(WelcomeEventsTypes.REGISTRATION_EVENT,false));
                 }
             });
@@ -140,7 +140,6 @@ public class KrotRepository {
 
                 @Override
                 public void onFailure(Call<ArrayList<BleDev>> call, Throwable t) {
-                    Log.d("dogs",t.getMessage());
                     bluetoothViewModel.onRequestPerformed(new ViewModelEvent(BluetoothEventsTypes.AVAILABLE_DEVS,
                             null));
                 }
@@ -149,21 +148,38 @@ public class KrotRepository {
 
     }
 
-    public void sendNewGpsEvent(GpsEvt gpsEvt, PresentationViewModel presentationViewModel){
+    public void sendNewGpsEvent(GpsEvent gpsEvent, PresentationViewModel presentationViewModel){
         if(openedSession!=null){
-            Call<Boolean> newGpsCall = krotApi.newgpsevents(openedSession.getApikey(), openedSession.getClient_id(), gpsEvt);
+            Call<Boolean> newGpsCall = krotApi.newgpsevent(openedSession.getApikey(), openedSession.getClient_id(), gpsEvent);
             newGpsCall.enqueue(new Callback<Boolean>() {
                 @Override
                 public void onResponse(Call<Boolean> call, Response<Boolean> response) {
-
+                    presentationViewModel.onRequestPerformed(new ViewModelEvent(PresentationEventsTypes.GPS_EVENT,response.body()));
                 }
-
                 @Override
                 public void onFailure(Call<Boolean> call, Throwable t) {
-                    Log.d("dogs",t.getMessage());
+                    presentationViewModel.onRequestPerformed(new ViewModelEvent(PresentationEventsTypes.GPS_EVENT,false));
                 }
             });
         }
 
+    }
+
+
+    public void sendNewBleEvent(BleEvt bleEvt,PresentationViewModel presentationViewModel) {
+        if(openedSession!=null){
+            Call<Integer> newBLECall = krotApi.newbleevent(openedSession.getApikey(), openedSession.getClient_id(), bleEvt);
+            Log.d("status",bleEvt.getScanned().toString());
+            newBLECall.enqueue(new Callback<Integer>() {
+                @Override
+                public void onResponse(Call<Integer> call, Response<Integer> response) {
+                    presentationViewModel.onRequestPerformed(new ViewModelEvent(PresentationEventsTypes.BLUETOOTH_EVENT,response.body()));
+                }
+                @Override
+                public void onFailure(Call<Integer> call, Throwable t) {
+                    presentationViewModel.onRequestPerformed(new ViewModelEvent(PresentationEventsTypes.BLUETOOTH_EVENT,null));
+                }
+            });
+        }
     }
 }

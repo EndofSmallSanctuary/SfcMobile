@@ -54,11 +54,7 @@ public class GpsService extends Service {
         @Override
         public void onLocationResult(@NonNull LocationResult locationResult) {
             super.onLocationResult(locationResult);
-            Log.d("status","location changed");
-            Location offeredLocation = locationResult.getLastLocation();
-
-            Log.d("status","current actual location will be at "+offeredLocation.getTime());
-            actualLocation = offeredLocation;
+            actualLocation = locationResult.getLastLocation();
         }
     };
 
@@ -143,8 +139,8 @@ public class GpsService extends Service {
         try {
 
             LocationRequest locationRequest = LocationRequest.create();
-            locationRequest.setInterval(2000);
-            locationRequest.setFastestInterval(1000);
+            locationRequest.setInterval(3000);
+            locationRequest.setFastestInterval(3000);
             locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
             LocationServices.getFusedLocationProviderClient(this)

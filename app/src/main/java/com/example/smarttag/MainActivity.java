@@ -212,8 +212,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         if(!isRegistrationPassed){
-            stopService(new Intent(MainActivity.this,PresentationActivity.class));
-            stopService(new Intent(MainActivity.this,PresentationActivity.class));
+            stopService(new Intent(MainActivity.this,GpsService.class));
+            stopService(new Intent(MainActivity.this,BluetoothService.class));
         }
         Log.d("status","on destroy");
         super.onDestroy();

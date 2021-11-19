@@ -193,6 +193,7 @@ public class BluetoothFragment extends Fragment {
     }
 
 
-
-
+    public void onNewDeviceAllowed() {
+        this.viewModel.requestAllBleDevs();
+    }
 }
