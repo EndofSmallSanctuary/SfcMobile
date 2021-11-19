@@ -25,20 +25,20 @@ public class StatusTextView  extends androidx.appcompat.widget.AppCompatTextView
         super(context, attrs, defStyleAttr);
     }
 
-    public void appendNeutral(String content){
+    public void showNeutral(String content){
         SpannableString spannableString = new SpannableString(content+"\n");
         spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.status_neutral)),0,content.length(),0);
-        this.append(spannableString);
+        this.setText(spannableString);
     }
-    public void appendSuccess(String content){
+    public void showSuccess(String content){
         SpannableString spannableString = new SpannableString(content+"\n");
         spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.status_success)),0,content.length(),0);
-        this.append(spannableString);
+        this.setText(spannableString);
     }
-    public void appendError(String content){
+    public void showError(String content){
         SpannableString spannableString = new SpannableString(content+"\n");
         spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.status_error)),0,content.length(),0);
-        this.append(spannableString);
+        this.setText(spannableString);
     }
 
 

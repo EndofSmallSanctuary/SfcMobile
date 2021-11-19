@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         viewModel = new ViewModelProvider(this).get(WelcomeViewModel.class);
 
-        loadingStatus.appendNeutral(getString(R.string.welcome_permissionscheck));
+        loadingStatus.showNeutral(getString(R.string.welcome_permissionscheck));
 
 
          if(preparePermissions()){
@@ -58,14 +58,14 @@ public class MainActivity extends AppCompatActivity {
                             new Handler(Looper.getMainLooper()).post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    loadingStatus.appendError(getString(R.string.welcome_connectionerror));
+                                    loadingStatus.showError(getString(R.string.welcome_connectionerror));
 
                                 }
                             });
                         } else {
-                            loadingStatus.appendSuccess(getString(R.string.welcome_connectionestablished));
+                            loadingStatus.showSuccess(getString(R.string.welcome_connectionestablished));
                             if (session.is_new_client) {
-                                loadingStatus.appendNeutral(getString(R.string.welcome_newclient));
+                                loadingStatus.showNeutral(getString(R.string.welcome_newclient));
                                 attachRegistationFragment();
                             } else {
                                 isRegistrationPassed = true;
@@ -95,15 +95,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void onPermissionsGranted() {
-        loadingStatus.appendNeutral(getString(R.string.welcome_retrievingdevinfo));
-        loadingStatus.appendNeutral(getString(R.string.launching_services));
+        loadingStatus.showNeutral(getString(R.string.welcome_retrievingdevinfo));
+        loadingStatus.showNeutral(getString(R.string.launching_services));
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             startForegroundService(new Intent(this, GpsService.class));
         else
             startService(new Intent(this,GpsService.class));
 
         startService(new Intent(this, BluetoothService.class));
-        loadingStatus.appendNeutral(getString(R.string.welcome_connectionestablish));
+        loadingStatus.showNeutral(getString(R.string.welcome_connectionestablish));
         viewModel.startSesion();
     }
 
@@ -173,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
 
 
             } else {
-                loadingStatus.appendSuccess(getString(R.string.weclome_permissionsgranted));
+                loadingStatus.showSuccess(getString(R.string.weclome_permissionsgranted));
                 return true;
             }
 
@@ -187,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
             for(int i=0;i<grantResults.length;i++){
                if(grantResults[i]!=0){
                    if(!shouldShowRequestPermissionRationale(permissions[i])){
-                       loadingStatus.appendError(getString(R.string.welcome_permissionerror));
+                       loadingStatus.showError(getString(R.string.welcome_permissionerror));
                    } else
                         preparePermissions();
                         return;
