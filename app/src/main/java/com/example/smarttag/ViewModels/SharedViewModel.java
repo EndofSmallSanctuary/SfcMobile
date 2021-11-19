@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.smarttag.RetrofitRepositories.KrotRepository;
 
-public abstract class SharedViewModel extends ViewModel {
+public class SharedViewModel extends ViewModel {
     protected    MutableLiveData<ViewModelEvent> sharedliveData = new MutableLiveData<>();
     protected    KrotRepository krotRepository = KrotRepository.getInstance();
 
@@ -13,7 +13,13 @@ public abstract class SharedViewModel extends ViewModel {
         return sharedliveData;
     }
 
-    public void onRequestPerformed(ViewModelEvent body){}
+    public void onRequestPerformed(ViewModelEvent body) {
+        if(body!=null){
+            sharedliveData.postValue(body);
+        } else {
+            //
+        }
+    }
 
 
 }

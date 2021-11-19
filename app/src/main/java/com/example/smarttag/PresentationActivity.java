@@ -23,10 +23,10 @@ import com.example.smarttag.Models.GpsEvent;
 import com.example.smarttag.Services.BluetoothService;
 import com.example.smarttag.Services.GpsService;
 import com.example.smarttag.ViewModels.Presentation.ForegroundEvent;
-import com.example.smarttag.ViewModels.Presentation.PresentationEventsTypes;
 import com.example.smarttag.ViewModels.Presentation.PresentationViewModel;
 import com.example.smarttag.ViewModels.ViewModelEvent;
 import com.example.smarttag.Views.BluetoothFragment;
+import com.example.smarttag.Views.ChatFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
@@ -123,7 +123,7 @@ public class PresentationActivity extends AppCompatActivity {
             @Override
             public void onChanged(ViewModelEvent viewModelEvent) {
                 switch (viewModelEvent.getWe_type()){
-                    case PresentationEventsTypes
+                    case PresentationViewModel.PresentationEventsTypes
                             .GPS_EVENT : {
                         Boolean eventResult = (Boolean) viewModelEvent.getObject();
                         if(eventResult!=null)
@@ -135,9 +135,9 @@ public class PresentationActivity extends AppCompatActivity {
                         }
                         break;
                     }
-                    case PresentationEventsTypes.BLUETOOTH_EVENT: {
+                    case PresentationViewModel.PresentationEventsTypes.BLUETOOTH_EVENT: {
                         Integer bluetoothResult = (Integer) viewModelEvent.getObject();
-                        if(bluetoothResult == PresentationEventsTypes.BLUETOOTH_EVENT_PLUS){
+                        if(bluetoothResult == PresentationViewModel.PresentationEventsTypes.BLUETOOTH_EVENT_PLUS){
                             BluetoothFragment bluetoothFragment = (BluetoothFragment) getSupportFragmentManager().findFragmentByTag("ble_fragment");
                             if(bluetoothFragment!=null) {
                                 bluetoothFragment.onNewDeviceAllowed();
@@ -204,7 +204,20 @@ public class PresentationActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()){
-
+                    case R.id.Menu_Bluetooth: {
+                        getSupportFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.Presentation_ViewHolder,new BluetoothFragment(),"ble_fragment")
+                                .commit();
+                        break;
+                    }
+                    case R.id.Menu_Chat:  {
+                        getSupportFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.Presentation_ViewHolder,new ChatFragment(),"chat_fragment")
+                                .commit();
+                        break;
+                    }
                 }
                 return true;
             }
@@ -225,19 +238,28 @@ public class PresentationActivity extends AppCompatActivity {
     }
 
     public Boolean getBleServiceStatus(){
-        return this.bluetoothService.isAlive();
+        if(this.bluetoothService!=null)
+            return this.bluetoothService.isAlive();
+        else return false;
     }
     public Boolean getGpsServiceStatus(){
-        return this.gpsService.isAlive();
+        if(this.gpsService!=null)
+            return this.gpsService.isAlive();
+        else return false;
+    }
+    public Boolean getScanStatus() {
+        if(this.bluetoothService!=null)
+            return this.bluetoothService.getScanMode();
+        else return false;
     }
     public void toogleScanMode(Boolean status){
        this.bluetoothService.setScanMode(status);
     }
-    public Boolean getScanStatus() {
-        return this.bluetoothService.getScanMode();
-    }
+
     public Boolean getRequestStatus() {
-        return this.bluetoothService.isInRequest();
+        if(bluetoothService!=null)
+            return this.bluetoothService.isInRequest();
+        else return false;
     }
     public void toogleRequest(boolean b) {
         if(b) {

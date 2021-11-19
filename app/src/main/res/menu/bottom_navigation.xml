@@ -13,11 +13,11 @@
         android:icon="@drawable/ic_baseline_message_24"
         android:title="@string/chat">
     </item>
-    <item
-        android:id="@+id/Menu.Settings"
-        android:enabled="true"
-        android:icon="@drawable/ic_baseline_settings_24"
-        android:title="@string/settings">
-    </item>
+<!--    <item-->
+<!--        android:id="@+id/Menu.Settings"-->
+<!--        android:enabled="true"-->
+<!--        android:icon="@drawable/ic_baseline_settings_24"-->
+<!--        android:title="@string/settings">-->
+<!--    </item>-->
 
 </menu>

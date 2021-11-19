@@ -1,4 +1,4 @@
-package com.example.smarttag.ViewModels.WelcomeScreen;
+package com.example.smarttag.ViewModels;
 
 import androidx.lifecycle.MutableLiveData;
 
@@ -8,6 +8,10 @@ import com.example.smarttag.ViewModels.SharedViewModel;
 import com.example.smarttag.ViewModels.ViewModelEvent;
 
 public class WelcomeViewModel extends SharedViewModel {
+    public class WelcomeEventsTypes {
+        public static final int SESSION_EVENT = 0;
+        public static final int REGISTRATION_EVENT = 1;
+    }
 
     public void startSesion(){
          krotRepository.startSession(this);
@@ -21,6 +25,7 @@ public class WelcomeViewModel extends SharedViewModel {
         krotRepository.registerUserInfo(userInfo,this);
     }
 
+    @Override
     public void onRequestPerformed(ViewModelEvent body) {
         if(body!=null){
             sharedliveData.postValue(body);

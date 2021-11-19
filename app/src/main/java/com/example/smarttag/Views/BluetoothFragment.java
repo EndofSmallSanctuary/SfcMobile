@@ -1,5 +1,6 @@
 package com.example.smarttag.Views;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -20,8 +21,7 @@ import android.widget.TextView;
 import com.example.smarttag.Models.BleDev;
 import com.example.smarttag.PresentationActivity;
 import com.example.smarttag.R;
-import com.example.smarttag.ViewModels.BluetoothFragment.BluetoothEventsTypes;
-import com.example.smarttag.ViewModels.BluetoothFragment.BluetoothViewModel;
+import com.example.smarttag.ViewModels.BluetoothViewModel;
 import com.example.smarttag.ViewModels.Presentation.ForegroundEvent;
 import com.example.smarttag.ViewModels.ViewModelEvent;
 import com.example.smarttag.Views.Adapters.BluetoothDevsAdapter;
@@ -70,15 +70,15 @@ public class BluetoothFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        parentActivity  =  (PresentationActivity) requireActivity();
+        viewModel = new ViewModelProvider(this).get(BluetoothViewModel.class);
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_bluetooth, container, false);
         ButterKnife.bind(this,view);
-        parentActivity  =  (PresentationActivity) requireActivity();
-        viewModel = new ViewModelProvider(this).get(BluetoothViewModel.class);
+
 
         foregroundEventsRecycler.setLayoutManager(new LinearLayoutManager(getActivity(),LinearLayoutManager.HORIZONTAL,false));
         foregroundEventsAdapter = new ForegroundEventsAdapter(getActivity(), parentActivity.getForegroundEvents());
@@ -92,7 +92,7 @@ public class BluetoothFragment extends Fragment {
             @Override
             public void onChanged(ViewModelEvent viewModelEvent) {
                 switch (viewModelEvent.getWe_type()){
-                    case BluetoothEventsTypes
+                    case BluetoothViewModel.BluetoothEventsTypes
                             .AVAILABLE_DEVS: {
                         if (viewModelEvent.getObject()!=null){
                             ArrayList<BleDev> bleDevs = (ArrayList<BleDev>) viewModelEvent.getObject();
@@ -118,9 +118,7 @@ public class BluetoothFragment extends Fragment {
            updateScanMode();
         });
 
-        functions_updategps.setOnClickListener(v -> {
-            this.updateGpsServiceStatus();
-        });
+        functions_updategps.setOnClickListener(v -> this.updateGpsServiceStatus());
 
         return view;
     }
@@ -128,7 +126,10 @@ public class BluetoothFragment extends Fragment {
     @Override
     public void onResume() {
         viewModel.requestAllBleDevs();
-        foregroundEventsAdapter.notifyDataSetChanged();
+        updateScanMode();
+        updateRequest();
+        updateGpsServiceStatus();
+        updateBleServiceStatus();
         super.onResume();
     }
 

@@ -4,6 +4,7 @@ import com.example.smarttag.Models.BleDev;
 import com.example.smarttag.Models.BleEvt;
 import com.example.smarttag.Models.DeviceInfo;
 import com.example.smarttag.Models.GpsEvent;
+import com.example.smarttag.Models.SfcMessage;
 import com.example.smarttag.Models.UserInfo;
 import com.example.smarttag.Session;
 
@@ -37,5 +38,14 @@ public interface KrotApi {
                               @Query("client_id")Long client_id,
                               @Body BleEvt bleEvt);
 
+
+    @POST("ChatALL")
+    Call<ArrayList<SfcMessage>>  listallchat(@Header("api-key")String apikey,
+                                             @Query("client_id")Long client_id);
+
+    @POST("Message")
+    Call<Boolean> newmsg(@Header("api-key")String apikey,
+                         @Query("client_id")Long client_id,
+                         @Body SfcMessage sfcMessage);
 }
 

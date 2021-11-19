@@ -159,7 +159,7 @@ public class BluetoothService extends Service {
                 intent.putExtra("payload", bleEvt);
                 sendBroadcast(intent);
             }
-        },3000,3000);
+        },6000,6000);
         isAlive = true;
         return START_STICKY;
     }
@@ -170,6 +170,7 @@ public class BluetoothService extends Service {
         timer.cancel();
         super.onDestroy();
     }
+
 
     private void openNotificationChannel(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){

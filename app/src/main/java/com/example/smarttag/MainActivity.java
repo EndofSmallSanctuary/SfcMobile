@@ -19,12 +19,9 @@ import com.example.smarttag.Models.UserInfo;
 import com.example.smarttag.Services.BluetoothService;
 import com.example.smarttag.Services.GpsService;
 import com.example.smarttag.ViewModels.ViewModelEvent;
-import com.example.smarttag.ViewModels.WelcomeScreen.WelcomeEventsTypes;
-import com.example.smarttag.ViewModels.WelcomeScreen.WelcomeViewModel;
+import com.example.smarttag.ViewModels.WelcomeViewModel;
 import com.example.smarttag.Views.Components.StatusTextView;
 import com.example.smarttag.Views.RegistationFragment;
-
-import java.text.DecimalFormat;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -54,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onChanged(ViewModelEvent viewModelEvent) {
                 switch (viewModelEvent.getWe_type()) {
-                    case WelcomeEventsTypes
+                    case WelcomeViewModel.WelcomeEventsTypes
                             .SESSION_EVENT: {
                         Session session = (Session) viewModelEvent.getObject();
                         if (session.apikey == null) {
@@ -78,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         break;
                     }
-                    case WelcomeEventsTypes
+                    case WelcomeViewModel.WelcomeEventsTypes
                             .REGISTRATION_EVENT:{
                         Boolean registationStatus = (Boolean) viewModelEvent.getObject();
                         if(registationStatus!=null&&registationStatus){

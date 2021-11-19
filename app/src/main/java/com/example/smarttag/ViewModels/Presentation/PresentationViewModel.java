@@ -12,6 +12,13 @@ import com.example.smarttag.ViewModels.ViewModelEvent;
 import java.util.ArrayList;
 
 public class PresentationViewModel extends SharedViewModel {
+    public class PresentationEventsTypes {
+        public static final int GPS_EVENT = 0;
+        public static final int BLUETOOTH_EVENT = 1;
+        public static final int BLUETOOTH_EVENT_PLUS = 15;
+
+    }
+
     public ArrayList<ForegroundEvent> foregroundEvents = new ArrayList<>();
     private int FOREGROUND_LIMIT = 10;
 
@@ -19,7 +26,6 @@ public class PresentationViewModel extends SharedViewModel {
 
     public void SendNewGpsEvent(GpsEvent gpsEvent){
         krotRepository.sendNewGpsEvent(gpsEvent,this);
-        Log.d("dogs", gpsEvent.getGpsEvt_Time()+" "+ gpsEvent.getGpsEvt_TimeStr());
     }
 
     public void sendNewBleEvent(BleEvt bleEvt) {
@@ -29,15 +35,6 @@ public class PresentationViewModel extends SharedViewModel {
 
     public MutableLiveData<ViewModelEvent> getProcessingEvents(){
         return this.sharedliveData;
-    }
-
-
-    public void onRequestPerformed(ViewModelEvent body) {
-        if(body!=null){
-            sharedliveData.postValue(body);
-        } else {
-            //
-        }
     }
 
 

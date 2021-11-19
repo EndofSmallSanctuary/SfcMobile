@@ -7,16 +7,15 @@ import com.example.smarttag.Models.BleDev;
 import com.example.smarttag.Models.BleEvt;
 import com.example.smarttag.Models.DeviceInfo;
 import com.example.smarttag.Models.GpsEvent;
+import com.example.smarttag.Models.SfcMessage;
 import com.example.smarttag.Models.UserInfo;
 import com.example.smarttag.Session;
 import com.example.smarttag.Utils.HTTPCODES;
-import com.example.smarttag.ViewModels.BluetoothFragment.BluetoothEventsTypes;
-import com.example.smarttag.ViewModels.BluetoothFragment.BluetoothViewModel;
-import com.example.smarttag.ViewModels.Presentation.PresentationEventsTypes;
+import com.example.smarttag.ViewModels.BluetoothViewModel;
+import com.example.smarttag.ViewModels.ChatViewModel;
 import com.example.smarttag.ViewModels.Presentation.PresentationViewModel;
 import com.example.smarttag.ViewModels.ViewModelEvent;
-import com.example.smarttag.ViewModels.WelcomeScreen.WelcomeEventsTypes;
-import com.example.smarttag.ViewModels.WelcomeScreen.WelcomeViewModel;
+import com.example.smarttag.ViewModels.WelcomeViewModel;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -84,7 +83,7 @@ public class KrotRepository {
                 if(response.isSuccessful()||response.code()== HTTPCODES.HTTP_CODES_OK) {
                     openedSession = response.body();
                     viewModel.onRequestPerformed(
-                            new ViewModelEvent(WelcomeEventsTypes.SESSION_EVENT,response.body()));
+                            new ViewModelEvent(WelcomeViewModel.WelcomeEventsTypes.SESSION_EVENT,response.body()));
                 }  else {
                     viewModel.onRequestPerformed(null);
                 }
@@ -108,16 +107,16 @@ public class KrotRepository {
                 @Override
                 public void onResponse(Call call, Response response) {
                     if(response.isSuccessful()||response.code()==HTTPCODES.HTTP_CODES_OK){
-                        viewModel.onRequestPerformed(new ViewModelEvent(WelcomeEventsTypes.REGISTRATION_EVENT,true));
+                        viewModel.onRequestPerformed(new ViewModelEvent(WelcomeViewModel.WelcomeEventsTypes.REGISTRATION_EVENT,true));
                     } else{
-                        viewModel.onRequestPerformed(new ViewModelEvent(WelcomeEventsTypes.REGISTRATION_EVENT,false));
+                        viewModel.onRequestPerformed(new ViewModelEvent(WelcomeViewModel.WelcomeEventsTypes.REGISTRATION_EVENT,false));
                     }
 
                 }
 
                 @Override
                 public void onFailure(Call call, Throwable t) {
-                    viewModel.onRequestPerformed(new ViewModelEvent(WelcomeEventsTypes.REGISTRATION_EVENT,false));
+                    viewModel.onRequestPerformed(new ViewModelEvent(WelcomeViewModel.WelcomeEventsTypes.REGISTRATION_EVENT,false));
                 }
             });
         }
@@ -130,17 +129,17 @@ public class KrotRepository {
                 @Override
                 public void onResponse(Call<ArrayList<BleDev>> call, Response<ArrayList<BleDev>> response) {
                     if(response.isSuccessful()||response.code()==HTTPCODES.HTTP_CODES_OK){
-                        bluetoothViewModel.onRequestPerformed(new ViewModelEvent(BluetoothEventsTypes.AVAILABLE_DEVS,
+                        bluetoothViewModel.onRequestPerformed(new ViewModelEvent(BluetoothViewModel.BluetoothEventsTypes.AVAILABLE_DEVS,
                                 response.body()));
                     } else {
-                        bluetoothViewModel.onRequestPerformed(new ViewModelEvent(BluetoothEventsTypes.AVAILABLE_DEVS,
+                        bluetoothViewModel.onRequestPerformed(new ViewModelEvent(BluetoothViewModel.BluetoothEventsTypes.AVAILABLE_DEVS,
                                 null));
                     }
                 }
 
                 @Override
                 public void onFailure(Call<ArrayList<BleDev>> call, Throwable t) {
-                    bluetoothViewModel.onRequestPerformed(new ViewModelEvent(BluetoothEventsTypes.AVAILABLE_DEVS,
+                    bluetoothViewModel.onRequestPerformed(new ViewModelEvent(BluetoothViewModel.BluetoothEventsTypes.AVAILABLE_DEVS,
                             null));
                 }
             });
@@ -154,11 +153,11 @@ public class KrotRepository {
             newGpsCall.enqueue(new Callback<Boolean>() {
                 @Override
                 public void onResponse(Call<Boolean> call, Response<Boolean> response) {
-                    presentationViewModel.onRequestPerformed(new ViewModelEvent(PresentationEventsTypes.GPS_EVENT,response.body()));
+                    presentationViewModel.onRequestPerformed(new ViewModelEvent(PresentationViewModel.PresentationEventsTypes.GPS_EVENT,response.body()));
                 }
                 @Override
                 public void onFailure(Call<Boolean> call, Throwable t) {
-                    presentationViewModel.onRequestPerformed(new ViewModelEvent(PresentationEventsTypes.GPS_EVENT,false));
+                    presentationViewModel.onRequestPerformed(new ViewModelEvent(PresentationViewModel.PresentationEventsTypes.GPS_EVENT,false));
                 }
             });
         }
@@ -169,17 +168,51 @@ public class KrotRepository {
     public void sendNewBleEvent(BleEvt bleEvt,PresentationViewModel presentationViewModel) {
         if(openedSession!=null){
             Call<Integer> newBLECall = krotApi.newbleevent(openedSession.getApikey(), openedSession.getClient_id(), bleEvt);
-            Log.d("status",bleEvt.getScanned().toString());
             newBLECall.enqueue(new Callback<Integer>() {
                 @Override
                 public void onResponse(Call<Integer> call, Response<Integer> response) {
-                    presentationViewModel.onRequestPerformed(new ViewModelEvent(PresentationEventsTypes.BLUETOOTH_EVENT,response.body()));
+                    presentationViewModel.onRequestPerformed(new ViewModelEvent(PresentationViewModel.PresentationEventsTypes.BLUETOOTH_EVENT,response.body()));
                 }
                 @Override
                 public void onFailure(Call<Integer> call, Throwable t) {
-                    presentationViewModel.onRequestPerformed(new ViewModelEvent(PresentationEventsTypes.BLUETOOTH_EVENT,null));
+                    presentationViewModel.onRequestPerformed(new ViewModelEvent(PresentationViewModel.PresentationEventsTypes.BLUETOOTH_EVENT,null));
                 }
             });
+        }
+    }
+
+    public void listAllChat(ChatViewModel chatViewModel){
+        if(openedSession!=null){
+            Call<ArrayList<SfcMessage>> listAllChat = krotApi.listallchat(openedSession.getApikey(), openedSession.getClient_id());
+            listAllChat.enqueue(new Callback<ArrayList<SfcMessage>>() {
+                @Override
+                public void onResponse(Call<ArrayList<SfcMessage>> call, Response<ArrayList<SfcMessage>> response) {
+                    chatViewModel.onRequestPerformed(new ViewModelEvent( ChatViewModel.ChatViewModelEventTypes.CHAT_LIST, response.body()));
+                }
+
+                @Override
+                public void onFailure(Call<ArrayList<SfcMessage>> call, Throwable t) {
+                    chatViewModel.onRequestPerformed(new ViewModelEvent( ChatViewModel.ChatViewModelEventTypes.CHAT_LIST, null));
+
+                }
+            });
+        }
+    }
+
+    public void sendNewMessage(ChatViewModel chatViewModel, SfcMessage sfcMessage) {
+        if(openedSession!=null){
+            Call<Boolean> sendSfcMessage = krotApi.newmsg(openedSession.getApikey(),openedSession.getClient_id(),sfcMessage);
+           sendSfcMessage.enqueue(new Callback<Boolean>() {
+               @Override
+               public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                   chatViewModel.onRequestPerformed(new ViewModelEvent(ChatViewModel.ChatViewModelEventTypes.CHAT_NEW_MSG,response.body()));
+               }
+
+               @Override
+               public void onFailure(Call<Boolean> call, Throwable t) {
+                   chatViewModel.onRequestPerformed(new ViewModelEvent(ChatViewModel.ChatViewModelEventTypes.CHAT_NEW_MSG,false));
+               }
+           });
         }
     }
 }
