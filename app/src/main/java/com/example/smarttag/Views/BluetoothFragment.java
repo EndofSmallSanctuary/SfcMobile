@@ -96,6 +96,11 @@ public class BluetoothFragment extends Fragment {
                             .AVAILABLE_DEVS: {
                         if (viewModelEvent.getObject()!=null){
                             ArrayList<BleDev> bleDevs = (ArrayList<BleDev>) viewModelEvent.getObject();
+                            if(bleDevs.size()==0){
+                                parentActivity.toogleScanMode(true);
+                                updateScanMode();
+                            }
+                            parentActivity.startBluetoothProcessing();
                             availableBleDevs.clear();
                             availableBleDevs.addAll(bleDevs);
                             devsAdapter.notifyDataSetChanged();

@@ -153,7 +153,7 @@ public class BluetoothService extends Service {
                 Intent intent = new Intent("ACTION_SMART_TAG");
                 BleEvt bleEvt = new BleEvt((long)121,new Date(),0.0d,0.0d,0.0d,(long)100,scan_mode);
                 BleDev bleDev = new BleDev();
-                bleDev.setBleDev_MAC("DE:FE:CF:86:AC:10");
+                bleDev.setBleDev_MAC("DE:FE:CF:86:AC:112");
                 bleDev.setBleDev_Name("Sample Device");
                 bleEvt.setBleDev(bleDev);
                 intent.putExtra("payload", bleEvt);

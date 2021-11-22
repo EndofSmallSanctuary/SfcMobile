@@ -73,7 +73,7 @@ public class PresentationActivity extends AppCompatActivity {
             BluetoothFragment bluetoothFragment = (BluetoothFragment) getSupportFragmentManager().findFragmentByTag("ble_fragment");
             if(bluetoothFragment!=null){
                 bluetoothFragment.updateBleServiceStatus();
-                bluetoothService.startProcessing();
+                //bluetoothService.startProcessing();
                 bluetoothFragment.updateRequest();
                 bluetoothFragment.updateScanMode();
             }
@@ -268,6 +268,13 @@ public class PresentationActivity extends AppCompatActivity {
             this.bluetoothService.stopProcessing();
         }
     }
+
+    public void startBluetoothProcessing(){
+        if(bluetoothService!=null){
+            bluetoothService.startProcessing();
+        }
+    }
+
     public Location getActualLocation(){
         return this.gpsService.getActualLocation();
     }
