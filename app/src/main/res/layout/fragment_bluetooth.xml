@@ -1,5 +1,5 @@
 <ScrollView
-    android:background="@android:color/transparent"
+    android:background="@color/sfc_creamy"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -7,7 +7,8 @@
 <LinearLayout
     android:background="@color/sfc_creamy"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:paddingBottom="10dp"
+    android:layout_height="wrap_content"
     android:orientation="vertical">
 
     <include layout="@layout/sfc_top_holder"/>
@@ -160,16 +161,46 @@
         </LinearLayout>
     </GridLayout>
 
+    <RelativeLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
     <TextView
         android:text="@string/available_devices"
         style="@style/FunctionsHeaderText"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/Bluetooth.Functions.Grid"/>
+       />
 
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/Bluetooth.Recycler.ShowDetails"
+        android:layout_marginEnd="30dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:textSize="15sp"
+        android:text="@string/Details"
+        android:layout_marginTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"  />
+
+    </RelativeLayout>
+
+    <TextView
+        android:paddingBottom="40dp"
+        android:paddingTop="40dp"
+        android:textColor="@color/hpstandart"
+        android:textSize="25sp"
+        android:fontFamily="@font/roboto_bold"
+        android:gravity="center"
+        android:id="@+id/Bluetooth.Recycler.EmptyDevsText"
+        android:text="@string/no_devices_are_available"
+        android:textAlignment="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/Bluetooth.Recyclers.Devs"
         android:layout_marginTop="10dp"
+        android:visibility="gone"
         android:orientation="horizontal"
         android:layout_marginStart="5dp"
         android:layout_width="match_parent"

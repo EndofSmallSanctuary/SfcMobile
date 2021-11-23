@@ -24,6 +24,8 @@ import com.example.smarttag.Models.BleDev;
 import com.example.smarttag.Models.BleEvt;
 import com.example.smarttag.R;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -31,6 +33,11 @@ import java.util.TimerTask;
 import es.dmoral.toasty.Toasty;
 
 public class BluetoothService extends Service {
+
+    private ArrayList<String> previouslyFoundDevs = new ArrayList<>(Arrays.asList("EC:14:4E:DE:1A:C9","FF:F1:7E:69:83:B6","D3:B8:0F:D1:43:DC",
+            "DE:FE:CF:86:AC:D5"));
+
+
     private final String CHANNEL_ID = "BlUETOOTH_SERVICE";
     Boolean isBinded = false;
     Boolean isInRequest = false;
@@ -46,7 +53,8 @@ public class BluetoothService extends Service {
             super.onScanResult(callbackType, result);
             BluetoothDevice bluetoothDevice = result.getDevice();
             if (bluetoothDevice != null) {
-                if (bluetoothDevice.getName() != null && bluetoothDevice.getName().toLowerCase().contains("smart_tag")) {
+                if (bluetoothDevice.getName() != null && (bluetoothDevice.getName().toLowerCase().contains("smart_tag")) ||
+                    bluetoothDevice.getAddress()!=null && previouslyFoundDevs.contains(bluetoothDevice.getAddress())) {
                     BluetoothDevice device = result.getDevice();
                     if (device.getName() != null && device.getName().toLowerCase().contains("smart")) {
                         byte[] bytes = result.getScanRecord().getBytes();
@@ -153,7 +161,7 @@ public class BluetoothService extends Service {
                 Intent intent = new Intent("ACTION_SMART_TAG");
                 BleEvt bleEvt = new BleEvt((long)121,new Date(),0.0d,0.0d,0.0d,(long)100,scan_mode);
                 BleDev bleDev = new BleDev();
-                bleDev.setBleDev_MAC("DE:FE:CF:86:AC:112");
+                bleDev.setBleDev_MAC("DE:FE:CF:86:AD:12");
                 bleDev.setBleDev_Name("Sample Device");
                 bleEvt.setBleDev(bleDev);
                 intent.putExtra("payload", bleEvt);

@@ -15,7 +15,7 @@
     <string name="welcome_permissionerror">Permission Error</string>
     <string name="registration_form">Registration Form</string>
     <string name="company_name">Company Name</string>
-    <string name="full_name">FIO</string>
+    <string name="full_name">Full name</string>
     <string name="phone_number">Phone Number</string>
     <string name="submit">Submit</string>
     <string name="bluetooth">Bluetooth</string>
@@ -47,4 +47,6 @@
     <string name="gps_service_is_live">Gps service is live</string>
     <string name="location_expired">Location Expired</string>
     <string name="smart_tag_message">Smart Tag message</string>
+    <string name="no_devices_are_available">No Devices are available</string>
+    <string name="Details">Show details</string>
 </resources>

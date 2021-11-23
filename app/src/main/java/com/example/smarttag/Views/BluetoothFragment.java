@@ -35,6 +35,11 @@ import butterknife.ButterKnife;
 
 public class BluetoothFragment extends Fragment {
 
+    @BindView(R.id.Bluetooth_Recycler_ShowDetails)
+    TextView showDetails;
+    @BindView(R.id.Bluetooth_Recycler_EmptyDevsText)
+    TextView emptyDevsText;
+
     @BindView(R.id.Bluetooth_Recyclers_Devs)
     RecyclerView devsRecycler;
     BluetoothDevsAdapter devsAdapter;
@@ -88,6 +93,7 @@ public class BluetoothFragment extends Fragment {
         devsRecycler.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
         devsRecycler.setAdapter(devsAdapter);
 
+
         viewModel.getBluetoothLiveData().observe(getViewLifecycleOwner(), new Observer<ViewModelEvent>() {
             @Override
             public void onChanged(ViewModelEvent viewModelEvent) {
@@ -99,8 +105,15 @@ public class BluetoothFragment extends Fragment {
                             if(bleDevs.size()==0){
                                 parentActivity.toogleScanMode(true);
                                 updateScanMode();
+                            } else {
+                                showDetails.setVisibility(View.VISIBLE);
+                                emptyDevsText.setVisibility(View.GONE);
+                                devsRecycler.setVisibility(View.VISIBLE);
                             }
+
+                            if(!isRequestLive)
                             parentActivity.startBluetoothProcessing();
+
                             availableBleDevs.clear();
                             availableBleDevs.addAll(bleDevs);
                             devsAdapter.notifyDataSetChanged();

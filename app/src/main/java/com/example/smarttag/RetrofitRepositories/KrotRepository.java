@@ -30,8 +30,9 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+
 public class KrotRepository {
-   // protected String  baseurl = "https://sfc.rniirs.ru/Api/";
+//    protected String  baseurl = "https://sfc.rniirs.ru/Api/";
 
   private static final String  baseurl = "http://192.168.0.100:8080/";
 
