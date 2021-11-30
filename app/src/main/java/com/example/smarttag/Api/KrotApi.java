@@ -2,6 +2,7 @@ package com.example.smarttag.Api;
 
 import com.example.smarttag.Models.BleDev;
 import com.example.smarttag.Models.BleEvt;
+import com.example.smarttag.Models.CltDev;
 import com.example.smarttag.Models.DeviceInfo;
 import com.example.smarttag.Models.GpsEvent;
 import com.example.smarttag.Models.SfcMessage;
@@ -19,6 +20,10 @@ import retrofit2.http.Query;
 public interface KrotApi {
     @POST("DevHandshake")
     Call<Session> handshake(@Body DeviceInfo body);
+
+    @POST("PersonalInfo")
+    Call<CltDev> personalinfo(@Header("api-key")String apikey,
+                          @Query("client_id")Long client_id);
 
     @POST("Register")
     Call<Void> registration(@Header("api-key")String apikey,

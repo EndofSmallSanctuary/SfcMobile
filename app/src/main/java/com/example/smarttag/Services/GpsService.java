@@ -122,7 +122,7 @@ public class GpsService extends Service {
 
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle(getString(R.string.gps_service_is_live))
-                .setContentText("Gps service requiring ")
+                .setContentText(getString(R.string.gps_service_description))
                 .setSmallIcon(R.drawable.location)
                 .setContentIntent(pendingIntent)
                 .build();

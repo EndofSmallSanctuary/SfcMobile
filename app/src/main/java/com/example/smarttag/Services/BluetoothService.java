@@ -120,9 +120,9 @@ public class BluetoothService extends Service {
         try {
             BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
             if (bluetoothAdapter == null){
-                Toasty.error(getApplicationContext(),"Bluetooth is not recognized", Toasty.LENGTH_SHORT).show();
+                Toasty.error(getApplicationContext(), getString(R.string.bluetooth_not_recognized), Toasty.LENGTH_SHORT).show();
             } else if (!bluetoothAdapter.isEnabled()){
-                Toasty.error(getApplicationContext(),"Bluetooth is not enabled", Toasty.LENGTH_SHORT).show();
+                Toasty.error(getApplicationContext(), getString(R.string.bluetooth_not_enabled), Toasty.LENGTH_SHORT).show();
             } else {
                 isInRequest = true;
                 scanner = bluetoothAdapter.getBluetoothLeScanner();
@@ -161,7 +161,7 @@ public class BluetoothService extends Service {
                 Intent intent = new Intent("ACTION_SMART_TAG");
                 BleEvt bleEvt = new BleEvt((long)121,new Date(),0.0d,0.0d,0.0d,(long)100,scan_mode);
                 BleDev bleDev = new BleDev();
-                bleDev.setBleDev_MAC("DE:FE:CF:86:AD:12");
+                bleDev.setBleDev_MAC("DE:F3:CE:85:CD:15");
                 bleDev.setBleDev_Name("Sample Device");
                 bleEvt.setBleDev(bleDev);
                 intent.putExtra("payload", bleEvt);

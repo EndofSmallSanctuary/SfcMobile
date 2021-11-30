@@ -5,6 +5,7 @@ import android.util.Log;
 import com.example.smarttag.Api.KrotApi;
 import com.example.smarttag.Models.BleDev;
 import com.example.smarttag.Models.BleEvt;
+import com.example.smarttag.Models.CltDev;
 import com.example.smarttag.Models.DeviceInfo;
 import com.example.smarttag.Models.GpsEvent;
 import com.example.smarttag.Models.SfcMessage;
@@ -32,8 +33,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class KrotRepository {
-//    protected String  baseurl = "https://sfc.rniirs.ru/Api/";
-
+  //  protected String  baseurl = "https://sfc.rniirs.ru/Api/";
   private static final String  baseurl = "http://192.168.0.100:8080/";
 
     protected KrotApi krotApi;
@@ -73,6 +73,24 @@ public class KrotRepository {
                     .build();
         }
         krotApi = retrofit.create(KrotApi.class);
+    }
+
+    public void getPersonalInfo(PresentationViewModel viewModel){
+        if(openedSession!=null) {
+            Call<CltDev> cltDevCall = krotApi.personalinfo(openedSession.getApikey(),openedSession.getClient_id());
+            cltDevCall.enqueue(new Callback<CltDev>() {
+                @Override
+                public void onResponse(Call<CltDev> call, Response<CltDev> response) {
+                    viewModel.onRequestPerformed(new ViewModelEvent(
+                            PresentationViewModel.PresentationEventsTypes.PERSONAL_INFO,response.body()));
+                }
+
+                @Override
+                public void onFailure(Call<CltDev> call, Throwable t) {
+                    viewModel.onRequestPerformed(null);
+                }
+            });
+        }
     }
 
     public void startSession(WelcomeViewModel viewModel){
@@ -166,6 +184,7 @@ public class KrotRepository {
     }
 
 
+
     public void sendNewBleEvent(BleEvt bleEvt,PresentationViewModel presentationViewModel) {
         if(openedSession!=null){
             Call<Integer> newBLECall = krotApi.newbleevent(openedSession.getApikey(), openedSession.getClient_id(), bleEvt);
@@ -214,6 +233,22 @@ public class KrotRepository {
                    chatViewModel.onRequestPerformed(new ViewModelEvent(ChatViewModel.ChatViewModelEventTypes.CHAT_NEW_MSG,false));
                }
            });
+        }
+    }
+
+
+    public void sendNewMessageWithNoCallback(SfcMessage sfcMessage){
+        if(openedSession!=null){
+            Call<Boolean> sendSfcMessage = krotApi.newmsg(openedSession.getApikey(),openedSession.getClient_id(),sfcMessage);
+            sendSfcMessage.enqueue(new Callback<Boolean>() {
+                @Override
+                public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                }
+
+                @Override
+                public void onFailure(Call<Boolean> call, Throwable t) {
+                }
+            });
         }
     }
 }

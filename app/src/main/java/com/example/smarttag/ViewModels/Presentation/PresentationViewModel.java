@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.smarttag.Models.BleEvt;
 import com.example.smarttag.Models.GpsEvent;
+import com.example.smarttag.Models.SfcMessage;
 import com.example.smarttag.ViewModels.SharedViewModel;
 import com.example.smarttag.ViewModels.ViewModelEvent;
 
@@ -15,6 +16,7 @@ public class PresentationViewModel extends SharedViewModel {
     public class PresentationEventsTypes {
         public static final int GPS_EVENT = 0;
         public static final int BLUETOOTH_EVENT = 1;
+        public static final int PERSONAL_INFO = 2;
         public static final int BLUETOOTH_EVENT_PLUS = 15;
 
     }
@@ -44,6 +46,14 @@ public class PresentationViewModel extends SharedViewModel {
         }
         foregroundEvents.add(0,event);
         return 0;
+    }
+
+    public void sendNewMessage(SfcMessage message) {
+        krotRepository.sendNewMessageWithNoCallback(message);
+    }
+
+    public void getPersonalInfo(){
+        krotRepository.getPersonalInfo(this);
     }
 
     public ArrayList<ForegroundEvent> getForegroundEvents() {

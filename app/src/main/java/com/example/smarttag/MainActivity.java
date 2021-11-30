@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
         startService(new Intent(this, BluetoothService.class));
         loadingStatus.showNeutral(getString(R.string.welcome_connectionestablish));
         viewModel.startSesion();
-    }
+     }
 
 
     @Override

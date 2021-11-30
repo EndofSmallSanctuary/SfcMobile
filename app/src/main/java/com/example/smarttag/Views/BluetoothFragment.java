@@ -1,9 +1,12 @@
 package com.example.smarttag.Views;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
@@ -11,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.smarttag.BluetoothArmyActivity;
 import com.example.smarttag.Models.BleDev;
 import com.example.smarttag.PresentationActivity;
 import com.example.smarttag.R;
@@ -89,12 +94,19 @@ public class BluetoothFragment extends Fragment {
         foregroundEventsAdapter = new ForegroundEventsAdapter(getActivity(), parentActivity.getForegroundEvents());
         foregroundEventsRecycler.setAdapter(foregroundEventsAdapter);
 
-        devsAdapter = new BluetoothDevsAdapter(getActivity(), availableBleDevs);
+        devsAdapter = new BluetoothDevsAdapter(getActivity(), availableBleDevs,false);
         devsRecycler.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
         devsRecycler.setAdapter(devsAdapter);
 
+        showDetails.setOnClickListener(v->{
+            Intent intent = new Intent(requireActivity(), BluetoothArmyActivity.class);
+            intent.putExtra("devs",availableBleDevs);
+            startActivity(intent);
+        });
+
 
         viewModel.getBluetoothLiveData().observe(getViewLifecycleOwner(), new Observer<ViewModelEvent>() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onChanged(ViewModelEvent viewModelEvent) {
                 switch (viewModelEvent.getWe_type()){
@@ -111,6 +123,7 @@ public class BluetoothFragment extends Fragment {
                                 devsRecycler.setVisibility(View.VISIBLE);
                             }
 
+                            //Если реквест выключен попытаться включить
                             if(!isRequestLive)
                             parentActivity.startBluetoothProcessing();
 

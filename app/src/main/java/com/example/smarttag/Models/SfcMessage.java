@@ -1,10 +1,12 @@
 package com.example.smarttag.Models;
 
+import java.util.Date;
+
 public class SfcMessage {
 
     Long idMessage;
     Long message_CltDev;
-    Long message_Time;
+    Long message_Time = new Date().getTime();
     double message_Lat = 0;
     double message_Long  = 0 ;
     double message_Alt = 0;

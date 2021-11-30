@@ -9,6 +9,7 @@ import android.os.Bundle;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
@@ -23,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.smarttag.Models.SfcMessage;
 import com.example.smarttag.PresentationActivity;
@@ -34,6 +36,7 @@ import com.example.smarttag.Views.Adapters.ChatMessagesAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -49,7 +52,18 @@ public class ChatFragment extends Fragment {
     String messageAttachment = "";
     PresentationActivity parentActivity;
 
+
     ActivityResultLauncher<Intent> attachPickLauncher;
+
+    @BindView(R.id.Chat_RecyclerLoading)
+    TextView messagesLoading;
+
+    @BindView(R.id.Chat_AttachPanel)
+    ConstraintLayout attachPanel;
+    @BindView(R.id.Chat_ControlPanel_FileName)
+    TextView filename;
+    @BindView(R.id.Chat_ControlPanel_CancelSelection)
+    ImageView cancelSelection;
 
     @BindView(R.id.Chat_Question_Text)
     EditText messageText;
@@ -82,7 +96,9 @@ public class ChatFragment extends Fragment {
                             ArrayList<SfcMessage> newMessageIncome = (ArrayList<SfcMessage>) viewModelEvent.getObject();
                             sfcMessageArrayList.clear();
                             sfcMessageArrayList.addAll(newMessageIncome);
+                            messagesLoading.setVisibility(View.GONE);
                             chatMessagesAdapter.notifyItemRangeChanged(0,sfcMessageArrayList.size());
+                            messageRecycler.setItemViewCacheSize(sfcMessageArrayList.size());
                             messageRecycler.scrollToPosition(sfcMessageArrayList.size()-1);
 
                         }
@@ -93,11 +109,12 @@ public class ChatFragment extends Fragment {
                             Boolean actualAnswer = (Boolean) viewModelEvent.getObject();
                             if(actualAnswer){
                                 sfcMessageArrayList.add(messageOnProbation);
+                                attachPanel.setVisibility(View.GONE);
                                 chatMessagesAdapter.notifyItemInserted(sfcMessageArrayList.size()-1);
                                 messageRecycler.scrollToPosition(sfcMessageArrayList.size()-1);
                                 if(parentActivity!=null){
                                     parentActivity.onNewForegroundEvent(new ForegroundEvent(ContextCompat.getDrawable(requireActivity(),R.drawable.status_success),"Message sent",
-                                            "New message was sent successfully"));
+                                            getString(R.string.New_Message_success)));
                                 }
                             }
                         }
@@ -107,6 +124,11 @@ public class ChatFragment extends Fragment {
             }
 
 
+        });
+
+        cancelSelection.setOnClickListener(v->{
+            messageAttachment = "";
+            attachPanel.setVisibility(View.GONE);
         });
 
         attach.setOnClickListener(v->{
@@ -121,7 +143,6 @@ public class ChatFragment extends Fragment {
             if(!messageCore.equals("")){
                 messageOnProbation = new SfcMessage();
                 messageOnProbation.setMessage_Type(0);
-                messageOnProbation.setMessage_Time(new Date().getTime());
                 messageOnProbation.setMessage_Text(messageCore);
                 if(!messageAttachment.equals("")){
                     messageOnProbation.setMessage_Image(messageAttachment);
@@ -131,7 +152,7 @@ public class ChatFragment extends Fragment {
                 messageAttachment = "";
                 messageText.setText("");
 
-            } else Toasty.error(requireActivity(),"Empty message bodies not allowed",Toasty.LENGTH_SHORT).show();
+            } else Toasty.error(requireActivity(), getString(R.string.empty_message_body),Toasty.LENGTH_SHORT).show();
         });
 
         attachPickLauncher = registerForActivityResult(
@@ -147,7 +168,11 @@ public class ChatFragment extends Fragment {
                                 bitmap.compress(Bitmap.CompressFormat.JPEG, 60, outputStream);
                                 byte[] b64base = outputStream.toByteArray();
                                 messageAttachment = Base64.encodeToString(b64base, Base64.DEFAULT);
-                                //  enqueueMessage();
+
+                                attachPanel.setVisibility(View.VISIBLE);
+                                File file = new File(imageuri.getPath());
+                                filename.setText(file.getName());
+
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -162,13 +187,13 @@ public class ChatFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         viewModel = new ViewModelProvider(this).get(ChatViewModel.class);
         parentActivity = (PresentationActivity) requireActivity();
-
+        viewModel.requestChatList();
         super.onCreate(savedInstanceState);
     }
 
     @Override
     public void onResume() {
-        viewModel.requestChatList();
+
         super.onResume();
     }
 }
