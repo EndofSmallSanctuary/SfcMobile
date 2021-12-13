@@ -2,6 +2,7 @@ package com.example.smarttag.ViewModels;
 
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.smarttag.Models.SfcMessage;
 import com.example.smarttag.Models.UserInfo;
 import com.example.smarttag.Session;
 import com.example.smarttag.ViewModels.SharedViewModel;
@@ -23,6 +24,10 @@ public class WelcomeViewModel extends SharedViewModel {
 
     public void registrateSomebruh(UserInfo userInfo){
         krotRepository.registerUserInfo(userInfo,this);
+    }
+
+    public void sendNewMessage(SfcMessage message) {
+        krotRepository.sendNewMessageWithNoCallback(message);
     }
 
     @Override

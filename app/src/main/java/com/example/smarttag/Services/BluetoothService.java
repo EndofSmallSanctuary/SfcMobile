@@ -127,6 +127,8 @@ public class BluetoothService extends Service {
                 isInRequest = true;
                 scanner = bluetoothAdapter.getBluetoothLeScanner();
                 scanner.startScan(scanCallback);
+                Toasty.success(getApplicationContext(), getString(R.string.bluetooth_enabled_successfully), Toasty.LENGTH_SHORT).show();
+
             }
         } catch (Exception e ){
             isInRequest = false;
@@ -155,19 +157,19 @@ public class BluetoothService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 //        openNotificationChannel();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                Intent intent = new Intent("ACTION_SMART_TAG");
-                BleEvt bleEvt = new BleEvt((long)121,new Date(),0.0d,0.0d,0.0d,(long)100,scan_mode);
-                BleDev bleDev = new BleDev();
-                bleDev.setBleDev_MAC("DE:F3:CE:85:CD:15");
-                bleDev.setBleDev_Name("Sample Device");
-                bleEvt.setBleDev(bleDev);
-                intent.putExtra("payload", bleEvt);
-                sendBroadcast(intent);
-            }
-        },6000,6000);
+//        timer.scheduleAtFixedRate(new TimerTask() {
+//            @Override
+//            public void run() {
+//                Intent intent = new Intent("ACTION_SMART_TAG");
+//                BleEvt bleEvt = new BleEvt((long)121,new Date(),0.0d,0.0d,0.0d,(long)117,scan_mode);
+//                BleDev bleDev = new BleDev();
+//                bleDev.setBleDev_MAC("DE:F3:CE:85:CD:15");
+//                bleDev.setBleDev_Name("H212000 ");
+//                bleEvt.setBleDev(bleDev);
+//                intent.putExtra("payload", bleEvt);
+//                sendBroadcast(intent);
+//            }
+//        },6000,6000);
         isAlive = true;
         return START_STICKY;
     }

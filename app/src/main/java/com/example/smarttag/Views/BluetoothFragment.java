@@ -124,12 +124,15 @@ public class BluetoothFragment extends Fragment {
                             }
 
                             //Если реквест выключен попытаться включить
-                            if(!isRequestLive)
-                            parentActivity.startBluetoothProcessing();
+                            if(!isRequestLive) {
+                                parentActivity.startBluetoothProcessing();
+                                updateRequest();
+                            }
+
 
                             availableBleDevs.clear();
                             availableBleDevs.addAll(bleDevs);
-                            devsAdapter.notifyDataSetChanged();
+                            devsAdapter.notifyItemRangeChanged(0,availableBleDevs.size());
                             break;
                         }
                     }

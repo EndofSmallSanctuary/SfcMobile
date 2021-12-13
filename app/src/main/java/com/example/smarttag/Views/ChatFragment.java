@@ -3,6 +3,7 @@ package com.example.smarttag.Views;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -93,6 +94,7 @@ public class ChatFragment extends Fragment {
                 switch (viewModelEvent.getWe_type()){
                     case ChatViewModel.ChatViewModelEventTypes.CHAT_LIST: {
                         if(viewModelEvent.getObject()!=null) {
+                            Toasty.warning(getActivity(),"MESSAGE LIST RECIEVED",Toasty.LENGTH_SHORT).show();
                             ArrayList<SfcMessage> newMessageIncome = (ArrayList<SfcMessage>) viewModelEvent.getObject();
                             sfcMessageArrayList.clear();
                             sfcMessageArrayList.addAll(newMessageIncome);
@@ -141,13 +143,20 @@ public class ChatFragment extends Fragment {
                     toString()
                     .trim();
             if(!messageCore.equals("")){
+
                 messageOnProbation = new SfcMessage();
                 messageOnProbation.setMessage_Type(0);
                 messageOnProbation.setMessage_Text(messageCore);
+
                 if(!messageAttachment.equals("")){
                     messageOnProbation.setMessage_Image(messageAttachment);
                 }
-
+                Location actualLocation = parentActivity.getActualLocation();
+                if(actualLocation!=null){
+                    messageOnProbation.setMessage_Alt(actualLocation.getAltitude());
+                    messageOnProbation.setMessage_Lat(actualLocation.getLatitude());
+                    messageOnProbation.setMessage_Long(actualLocation.getLongitude());
+                }
                 viewModel.sendManualMesage(messageOnProbation);
                 messageAttachment = "";
                 messageText.setText("");

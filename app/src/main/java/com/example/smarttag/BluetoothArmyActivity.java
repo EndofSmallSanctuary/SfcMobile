@@ -206,6 +206,8 @@ public class BluetoothArmyActivity extends AppCompatActivity {
             builder.append("&idCltDev=").append(preferences.getLong("cltId",0));
             builder.append("&bleDevs=").append(preferences.getString("bleDevs",""));
             MAP_TAB_LINK_SIGNATURE = builder.toString();
+            Log.d("dogs",MAP_TAB_LINK_SIGNATURE);
+
 
             builder = new StringBuilder(TIMELINE_TAB_LINK_SIGNATURE);
             builder.append("&idCltDev=").append(preferences.getLong("cltId",0));

@@ -19,13 +19,13 @@
         style="@style/FunctionsHeaderText"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:text="Functions"/>
+        android:text="@string/functions"/>
 
     <GridLayout
         android:id="@+id/Bluetooth.Functions.Grid"
         app:layout_constraintTop_toBottomOf="@id/Bluetooth.Functions.Header"
-        android:columnCount="3"
         android:alignmentMode="alignBounds"
+        android:columnCount="3"
         android:rowOrderPreserved="true"
         android:useDefaultMargins="true"
         android:layout_marginTop="10dp"
@@ -45,7 +45,9 @@
             <TextView
                 android:id="@+id/Bluetooth.Functions.StartRequest.Text"
                 android:layout_marginTop="10dp"
+
                 android:textAlignment="center"
+                android:breakStrategy="simple"
                 android:text="@string/start_bluetooth_request"
                 android:fontFamily="@font/roboto_bold"
                 android:textColor="@color/black"
@@ -65,6 +67,7 @@
                 android:layout_marginTop="10dp"
                 android:textAlignment="center"
                 android:text="@string/scan_new_devices"
+                android:breakStrategy="simple"
                 android:fontFamily="@font/roboto_bold"
                 android:textColor="@color/black"
                 android:layout_width="wrap_content"
@@ -82,6 +85,7 @@
             <TextView
                 android:layout_marginTop="10dp"
                 android:textAlignment="center"
+                android:breakStrategy="simple"
                 android:text="@string/check_gps_service_status"
                 android:fontFamily="@font/roboto_bold"
                 android:textColor="@color/black"
@@ -98,6 +102,8 @@
         android:text="@string/status"/>
 
     <GridLayout
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:columnCount="3"
         android:useDefaultMargins="true"
         android:background="@color/white"
@@ -116,6 +122,7 @@
             <TextView
                 android:layout_marginTop="10dp"
                 android:textAlignment="center"
+                android:breakStrategy="simple"
                 android:text="@string/scan_mode_status"
                 android:fontFamily="@font/roboto_bold"
                 android:textColor="@color/black"
@@ -135,6 +142,7 @@
             <TextView
                 android:layout_marginTop="10dp"
                 android:textAlignment="center"
+                android:breakStrategy="simple"
                 android:text="@string/bluetooth_service_status"
                 android:fontFamily="@font/roboto_bold"
                 android:textColor="@color/black"
@@ -153,6 +161,7 @@
             <TextView
                 android:layout_marginTop="10dp"
                 android:textAlignment="center"
+                android:breakStrategy="simple"
                 android:text="@string/gps_service_status"
                 android:fontFamily="@font/roboto_bold"
                 android:textColor="@color/black"
@@ -162,14 +171,14 @@
     </GridLayout>
 
     <RelativeLayout
+
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-    <TextView
-        android:text="@string/available_devices"
-        style="@style/FunctionsHeaderText"
-       />
+        <TextView
+            style="@style/FunctionsHeaderText"
+            android:text="@string/available_devices" />
 
     <TextView
         android:visibility="gone"
@@ -207,7 +216,7 @@
         android:layout_height="wrap_content"/>
 
     <TextView
-        android:text="Latest Events"
+        android:text="@string/latest_events"
         style="@style/FunctionsHeaderText"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/Bluetooth.Functions.Grid"/>

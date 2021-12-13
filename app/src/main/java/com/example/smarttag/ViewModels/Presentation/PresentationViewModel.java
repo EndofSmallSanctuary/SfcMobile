@@ -48,9 +48,7 @@ public class PresentationViewModel extends SharedViewModel {
         return 0;
     }
 
-    public void sendNewMessage(SfcMessage message) {
-        krotRepository.sendNewMessageWithNoCallback(message);
-    }
+
 
     public void getPersonalInfo(){
         krotRepository.getPersonalInfo(this);

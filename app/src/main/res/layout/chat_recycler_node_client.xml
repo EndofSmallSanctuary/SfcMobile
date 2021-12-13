@@ -21,7 +21,6 @@
     android:layout_marginTop="10dp"
     android:layout_marginEnd="10dp"
     android:background="@drawable/chat_message_client"
-    android:minHeight="40dp"
     app:layout_constraintTop_toTopOf="parent"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintStart_toStartOf="@id/view_center"
@@ -29,13 +28,14 @@
     android:layout_height="wrap_content">
 
     <TextView
-        android:textAlignment="center"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:textAlignment="textStart"
         android:textColor="#333"
         android:text="Sample messageKKKKKKKKKKKKKKK text"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="10dp"
         android:paddingStart="10dp"
         android:id="@+id/Chat.Message.Client.Text"
         android:layout_width="0dp"
@@ -49,9 +49,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/Chat.Message.Client.Text"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:scaleType="fitXY"
+        android:scaleType="fitCenter"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
         android:layout_height="150dp"
-        android:layout_width="100dp"
+        android:layout_width="wrap_content"
         android:layout_marginBottom="5dp"
         />
 
@@ -63,7 +65,7 @@
         android:textColor="@android:color/darker_gray"
         android:paddingStart="5dp"
         android:paddingEnd="5dp"
-        android:text="Изображение загружается..."
+        android:text="@string/imageLoading"
         android:id="@+id/Chat.Message.Client.Text.Loading"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

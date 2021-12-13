@@ -70,7 +70,7 @@ public class ChatMessagesAdapter  extends RecyclerView.Adapter<RecyclerView.View
                 clientMsgHolder.client_Msg.setText(messages.get(position).getMessage_Text());
                         if (messages.get(position).getMessage_Image() != null && !messages.get(position).getMessage_Image().equals("")) {
                             if(clientMsgHolder.client_Image.getVisibility()==View.GONE) {
-                                new Thread(()->asyncImageLoad(messages.get(position).getMessage_Image().trim(),clientMsgHolder)).start();
+                                asyncImageLoad(messages.get(position).getMessage_Image().trim(),clientMsgHolder);
                             }
                         }
 
@@ -83,7 +83,7 @@ public class ChatMessagesAdapter  extends RecyclerView.Adapter<RecyclerView.View
                 adminMsgHolder.admin_Msg.setText(messages.get(position).getMessage_Text());
                         if (messages.get(position).getMessage_Image() != null && !messages.get(position).getMessage_Image().equals("")) {
                             if(adminMsgHolder.admin_Image.getVisibility()==View.GONE) {
-                                new Thread(()->asyncImageLoad(messages.get(position).getMessage_Image().trim(),adminMsgHolder)).start();
+                               asyncImageLoad(messages.get(position).getMessage_Image().trim(),adminMsgHolder);
                             }
                         }
 
@@ -106,7 +106,10 @@ public class ChatMessagesAdapter  extends RecyclerView.Adapter<RecyclerView.View
 
     @Override
     public int getItemViewType(int position) {
-        if (messages.get(position).getMessage_CltDev()!=null && messages.get(position).getMessage_CltDev() == 0)
+
+        SfcMessage message = messages.get(position);
+
+        if (message.getMessage_CltDev()!=null && (message.getMessage_CltDev() == 0 || message.getMessage_Text().contains("Благодарим за регистрацию")))
             return  ChatMessageViewTypes.AUTHOR_ADMIN;
         else
             return ChatMessageViewTypes.AUTHOR_CLIENT;
@@ -128,7 +131,6 @@ public class ChatMessagesAdapter  extends RecyclerView.Adapter<RecyclerView.View
 
         public ClientMsgHolder(@NonNull View itemView) {
             super(itemView);
-
             client_Msg = itemView.findViewById(R.id.Chat_Message_Client_Text);
             client_Time = itemView.findViewById(R.id.Chat_Message_Client_Time);
             client_Image = itemView.findViewById(R.id.Chat_Message_Client_Image);
@@ -169,7 +171,7 @@ public class ChatMessagesAdapter  extends RecyclerView.Adapter<RecyclerView.View
     private String findReplyInChain(Long replyTo){
         for(int i =0; i < messages.size(); i++){
             SfcMessage sfcMessage = messages.get(i);
-            if(sfcMessage.getIdMessage()==replyTo)
+            if(sfcMessage.getIdMessage().equals(replyTo))
                 return ForegroundEvent.milisToStrDate(sfcMessage.getMessage_Time());
         }
         return null;

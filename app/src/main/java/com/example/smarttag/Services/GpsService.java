@@ -117,14 +117,13 @@ public class GpsService extends Service {
         wakeLock.acquire();
         openNotificationChannel();
 
-        Intent serviceNotificationIntent = new Intent(this, PresentationActivity.class);
-        @SuppressLint("UnspecifiedImmutableFlag") PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, serviceNotificationIntent, 0);
+//        Intent serviceNotificationIntent = new Intent(this, PresentationActivity.class);
+//        @SuppressLint("UnspecifiedImmutableFlag") PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, serviceNotificationIntent, 0);
 
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle(getString(R.string.gps_service_is_live))
                 .setContentText(getString(R.string.gps_service_description))
                 .setSmallIcon(R.drawable.location)
-                .setContentIntent(pendingIntent)
                 .build();
 
         startForeground(1,notification);

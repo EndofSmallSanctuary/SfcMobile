@@ -6,20 +6,28 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.Manifest;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 
+import com.example.smarttag.Models.SfcMessage;
 import com.example.smarttag.Models.UserInfo;
 import com.example.smarttag.Services.BluetoothService;
 import com.example.smarttag.Services.GpsService;
 import com.example.smarttag.ViewModels.ViewModelEvent;
 import com.example.smarttag.ViewModels.WelcomeViewModel;
+import com.example.smarttag.Views.BluetoothFragment;
 import com.example.smarttag.Views.Components.StatusTextView;
 import com.example.smarttag.Views.RegistationFragment;
 
@@ -28,6 +36,53 @@ import butterknife.ButterKnife;
 import es.dmoral.toasty.Toasty;
 
 public class MainActivity extends AppCompatActivity {
+
+    SharedPreferences preferences;
+    GpsService gpsService;
+
+
+    private final ServiceConnection gpsServiceConnection =  new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            GpsService.GpsBinder binder = (GpsService.GpsBinder) service;
+            gpsService = binder.getService();
+
+            try {
+                Thread.currentThread().sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+
+            SfcMessage sfcMessage = new SfcMessage();
+            sfcMessage.setMessage_Text(getString(R.string.app_installed));
+            sfcMessage.setMessage_Type(1);
+
+
+            Location location = gpsService.getActualLocation();
+            if(gpsService.validateLocation(location)) {
+                sfcMessage.setMessage_Alt(location.getAltitude());
+                sfcMessage.setMessage_Lat(location.getLatitude());
+                sfcMessage.setMessage_Long(location.getLongitude());
+            } else {
+                sfcMessage.setMessage_Alt(0d);
+                sfcMessage.setMessage_Lat(0d);
+                sfcMessage.setMessage_Long(0d);
+            }
+
+            viewModel.sendNewMessage(sfcMessage);
+            preferences.edit().putBoolean("installed", true).apply();
+
+            startActivity(new Intent(MainActivity.this, PresentationActivity.class));
+            finish();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
 
     @BindView(R.id.Welcome_Status)
     StatusTextView loadingStatus;
@@ -69,8 +124,7 @@ public class MainActivity extends AppCompatActivity {
                                 attachRegistationFragment();
                             } else {
                                 isRegistrationPassed = true;
-                                startActivity(new Intent(MainActivity.this,PresentationActivity.class));
-                                finish();
+                                verifyAppInstalled();
                             }
                         }
                         break;
@@ -81,8 +135,7 @@ public class MainActivity extends AppCompatActivity {
                         if(registationStatus!=null&&registationStatus){
                             Toasty.success(MainActivity.this,getResources().getString(R.string.welcome_registrationsuccess), Toasty.LENGTH_SHORT).show();
                             isRegistrationPassed = true;
-                            startActivity(new Intent(MainActivity.this,PresentationActivity.class));
-                            finish();
+                            verifyAppInstalled();
                         } else {
                             Toasty.error(MainActivity.this,getResources().getString(R.string.welcome_registrationfail), Toasty.LENGTH_SHORT).show();
                         }
@@ -141,7 +194,6 @@ public class MainActivity extends AppCompatActivity {
                     checkSelfPermission(Manifest.permission.FOREGROUND_SERVICE)        != PackageManager.PERMISSION_GRANTED) {
 
                 if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.Q){
-                    Log.d("status","Im here");
                     requestPermissions(new String[]{
                             Manifest.permission.WRITE_EXTERNAL_STORAGE,
                             Manifest.permission.BLUETOOTH,
@@ -151,7 +203,6 @@ public class MainActivity extends AppCompatActivity {
                             Manifest.permission.ACCESS_COARSE_LOCATION
                     }, 1);
                 } else if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.P){
-                    Log.d("status","Im there");
                         requestPermissions(new String[]{
                                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
                                 Manifest.permission.BLUETOOTH,
@@ -206,13 +257,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    private void verifyAppInstalled(){
+        preferences = getSharedPreferences("prefs",Context.MODE_PRIVATE);
+        if(!preferences.contains("installed")) {
+            loadingStatus.showNeutral("new install detected");
+            loadingStatus.showNeutral(getString(R.string.awaiting_first_geo_data));
+            bindService(new Intent(MainActivity.this, GpsService.class), gpsServiceConnection, Context.BIND_AUTO_CREATE);
+        } else {
+            startActivity(new Intent(MainActivity.this, PresentationActivity.class));
+            finish();
+        }
+    }
+
     @Override
     protected void onDestroy() {
         if(!isRegistrationPassed){
             stopService(new Intent(MainActivity.this,GpsService.class));
             stopService(new Intent(MainActivity.this,BluetoothService.class));
         }
-        Log.d("status","on destroy");
+        if(gpsService!=null){
+            unbindService(gpsServiceConnection);
+        }
         super.onDestroy();
     }
 }

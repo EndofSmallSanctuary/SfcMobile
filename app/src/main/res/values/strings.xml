@@ -61,7 +61,7 @@
     <string name="Message_Quote">\"Reply on message at : \"</string>
     <string name="New_Message_success">New message was sent successfully</string>
     <string name="empty_message_body">Empty message bodies not allowed</string>
-    <string name="all_fields_must_be_not_empty">Все поля должны быть заполнены</string>
+    <string name="all_fields_must_be_not_empty">Empty fields not allowed</string>
     <string name="correct_phone_required">Correct Phone Required</string>
     <string name="has_sent">\" has sent \"</string>
     <string name="msg">msg\n</string>
@@ -76,5 +76,13 @@
     <string name="serial_number">Serial Number</string>
     <string name="serial_not_available">Serial not Available</string>
     <string name="messages_loading">Messages Loading...</string>
-    <string name="app_installed">Smart Tag app installed</string>
+    <string name="app_installed">Приложение Умная Метка установлено</string>
+    <string name="awaiting_first_geo_data">Awaiting first geo data</string>
+    <string name="imageLoading">Image loading...</string>
+    <string name="Delivered">Доставлено</string>
+    <string name="not_delivered">Не доставлено</string>
+    <string name="functions">Functions</string>
+    <string name="latest_events">Latest Events</string>
+    <string name="your_message">Your Message</string>
+    <string name="bluetooth_enabled_successfully">Request Enabled</string>
 </resources>

@@ -33,8 +33,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class KrotRepository {
-  //  protected String  baseurl = "https://sfc.rniirs.ru/Api/";
-  private static final String  baseurl = "http://192.168.0.100:8080/";
+    protected String  baseurl = "https://sfc.rniirs.ru/Api/";
+ // private static final String  baseurl = "http://192.168.0.100:8080/";
 
     protected KrotApi krotApi;
     protected Session openedSession;
@@ -207,6 +207,7 @@ public class KrotRepository {
             listAllChat.enqueue(new Callback<ArrayList<SfcMessage>>() {
                 @Override
                 public void onResponse(Call<ArrayList<SfcMessage>> call, Response<ArrayList<SfcMessage>> response) {
+                    Log.d("dogs","message list recieved");
                     chatViewModel.onRequestPerformed(new ViewModelEvent( ChatViewModel.ChatViewModelEventTypes.CHAT_LIST, response.body()));
                 }
 

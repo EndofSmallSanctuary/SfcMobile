@@ -98,7 +98,7 @@ public class PresentationActivity extends AppCompatActivity {
                     Location location = gpsService.getActualLocation();
                     if(gpsService.validateLocation(location)) {
                         onNewForegroundEvent(new ForegroundEvent(ContextCompat.getDrawable(PresentationActivity.this, R.drawable.bluetooth), "Smart Tag event",
-                                bleEvt.getBleDev().getBleDev_Name() + getString(R.string.has_sent) + bleEvt.getBleEvt_NumMsg() + getString(R.string.msg) + getString(R.string.sending_actuall_date)
+                                bleEvt.getBleDev().getBleDev_Name() + getString(R.string.has_sent) + " " + getString(R.string.msg) + " " + bleEvt.getBleEvt_NumMsg() + "\n" + getString(R.string.sending_actuall_date)
 
                         ));
                         bleEvt.setBleEvt_Lat(location.getLatitude());
@@ -106,7 +106,7 @@ public class PresentationActivity extends AppCompatActivity {
                         bleEvt.setBleEvt_Alt(location.getAltitude());
                     } else {
                         onNewForegroundEvent(new ForegroundEvent(ContextCompat.getDrawable(PresentationActivity.this, R.drawable.bluetooth), "Smart Tag event",
-                                bleEvt.getBleDev().getBleDev_Name() + getString(R.string.has_sent) + bleEvt.getBleEvt_NumMsg() + getString(R.string.msg) + getString(R.string.sending_zeros)));
+                                bleEvt.getBleDev().getBleDev_Name() + getString(R.string.has_sent) + " " + getString(R.string.msg) + " " + bleEvt.getBleEvt_NumMsg() +"\n" + getString(R.string.sending_zeros)));
                     }
 
                     viewmodel.sendNewBleEvent(bleEvt);
@@ -123,10 +123,7 @@ public class PresentationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_presentation);
         ButterKnife.bind(this);
-        SharedPreferences preferences = getSharedPreferences("prefs",Context.MODE_PRIVATE);
-        if(!preferences.contains("installed")){
-            isNeedToBeSent = true;
-        }
+
         registerReceiver(eventReciever,new IntentFilter("ACTION_SMART_TAG"));
         viewmodel = new ViewModelProvider(this).get(PresentationViewModel.class);
         viewmodel.getProcessingEvents().observe(this, new Observer<ViewModelEvent>() {
@@ -136,9 +133,15 @@ public class PresentationActivity extends AppCompatActivity {
                     case PresentationViewModel.PresentationEventsTypes
                             .GPS_EVENT : {
                         Boolean eventResult = (Boolean) viewModelEvent.getObject();
-                        if(eventResult!=null)
-                            onNewForegroundEvent(new ForegroundEvent(ContextCompat.getDrawable(PresentationActivity.this,R.drawable.location),
-                                    getString(R.string.gps_event_transfer),eventResult.toString()));
+                        if(eventResult!=null) {
+                            if(eventResult) {
+                                onNewForegroundEvent(new ForegroundEvent(ContextCompat.getDrawable(PresentationActivity.this, R.drawable.location),
+                                        getString(R.string.gps_event_transfer), getString(R.string.Delivered)));
+                            } else {
+                                onNewForegroundEvent(new ForegroundEvent(ContextCompat.getDrawable(PresentationActivity.this, R.drawable.location),
+                                        getString(R.string.gps_event_transfer), getString(R.string.not_delivered)));
+                            }
+                        }
                         else {
                             onNewForegroundEvent(new ForegroundEvent(ContextCompat.getDrawable(PresentationActivity.this,R.drawable.location),
                                     getString(R.string.gps_event_transfer),getString(R.string.poor_connection)));
@@ -190,17 +193,6 @@ public class PresentationActivity extends AppCompatActivity {
                                     prepareSignatureRequest(ForegroundEvent.FOREGROUND_EVENT_TYPE_GPS,
                                             getString(R.string.gps_location_arrived), getString(R.string.data_packet_came) + ForegroundEvent.milisToStrDate(location.getTime()));
                                     viewmodel.SendNewGpsEvent(new GpsEvent(location.getTime(),location.getLatitude(),location.getLongitude(),location.getAltitude()));
-                                    if(isNeedToBeSent){
-                                        SfcMessage sfcMessage = new SfcMessage();
-                                        sfcMessage.setMessage_Text(getString(R.string.app_installed));
-                                        sfcMessage.setMessage_Alt(location.getAltitude());
-                                        sfcMessage.setMessage_Lat(location.getLatitude());
-                                        sfcMessage.setMessage_Long(location.getLongitude());
-                                        sfcMessage.setMessage_Type(1);
-                                        viewmodel.sendNewMessage(sfcMessage);
-                                        isNeedToBeSent = false;
-                                        preferences.edit().putBoolean("installed",true).apply();
-                                    }
                                 }
                             });
                         } else {
