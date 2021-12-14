@@ -98,7 +98,7 @@ public class PresentationActivity extends AppCompatActivity {
                     Location location = gpsService.getActualLocation();
                     if(gpsService.validateLocation(location)) {
                         onNewForegroundEvent(new ForegroundEvent(ContextCompat.getDrawable(PresentationActivity.this, R.drawable.bluetooth), "Smart Tag event",
-                                bleEvt.getBleDev().getBleDev_Name() + getString(R.string.has_sent) + " " + getString(R.string.msg) + " " + bleEvt.getBleEvt_NumMsg() + "\n" + getString(R.string.sending_actuall_date)
+                                bleEvt.getBleDev().getBleDev_Name() +" "+ getString(R.string.has_sent) + " " + getString(R.string.msg) + " " + bleEvt.getBleEvt_NumMsg() + "\n" + getString(R.string.sending_actuall_date)
 
                         ));
                         bleEvt.setBleEvt_Lat(location.getLatitude());
@@ -106,7 +106,7 @@ public class PresentationActivity extends AppCompatActivity {
                         bleEvt.setBleEvt_Alt(location.getAltitude());
                     } else {
                         onNewForegroundEvent(new ForegroundEvent(ContextCompat.getDrawable(PresentationActivity.this, R.drawable.bluetooth), "Smart Tag event",
-                                bleEvt.getBleDev().getBleDev_Name() + getString(R.string.has_sent) + " " + getString(R.string.msg) + " " + bleEvt.getBleEvt_NumMsg() +"\n" + getString(R.string.sending_zeros)));
+                                bleEvt.getBleDev().getBleDev_Name() +" "+ getString(R.string.has_sent) + " " + getString(R.string.msg) + " " + bleEvt.getBleEvt_NumMsg() +"\n" + getString(R.string.sending_zeros)));
                     }
 
                     viewmodel.sendNewBleEvent(bleEvt);

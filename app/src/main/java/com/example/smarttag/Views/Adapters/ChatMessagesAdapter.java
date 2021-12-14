@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -25,6 +26,7 @@ import com.download.library.AsyncTask;
 import com.example.smarttag.Models.SfcMessage;
 import com.example.smarttag.R;
 import com.example.smarttag.ViewModels.Presentation.ForegroundEvent;
+import com.example.smarttag.Views.ChatFragment;
 
 import java.util.ArrayList;
 import java.util.Base64;
@@ -41,11 +43,13 @@ public class ChatMessagesAdapter  extends RecyclerView.Adapter<RecyclerView.View
     }
 
     private ArrayList<SfcMessage> messages;
+    private ChatFragment bindedFragment;
     private Context context;
 
-    public ChatMessagesAdapter(ArrayList<SfcMessage> messages, Context context){
+    public ChatMessagesAdapter(ArrayList<SfcMessage> messages, ChatFragment fragment, Context context){
         this.messages = messages;
         this.context = context;
+        this.bindedFragment = fragment;
     }
 
 
@@ -68,10 +72,23 @@ public class ChatMessagesAdapter  extends RecyclerView.Adapter<RecyclerView.View
             case ChatMessageViewTypes.AUTHOR_CLIENT:{
                 ClientMsgHolder clientMsgHolder = (ClientMsgHolder) holder;
                 clientMsgHolder.client_Msg.setText(messages.get(position).getMessage_Text());
-                        if (messages.get(position).getMessage_Image() != null && !messages.get(position).getMessage_Image().equals("")) {
-                            if(clientMsgHolder.client_Image.getVisibility()==View.GONE) {
-                                asyncImageLoad(messages.get(position).getMessage_Image().trim(),clientMsgHolder);
-                            }
+                        if (messages.get(position).getMessage_Image() != null &&
+                                !messages.get(position).getMessage_Image().equals("0")) {
+//                            if(clientMsgHolder.client_Image.getVisibility()==View.GONE) {
+                                if(messages.get(position).getMessage_Image().equals("1")){
+                                    //Load
+                                    if(bindedFragment!=null) {
+                                        bindedFragment.loadNewImg(messages.get(position).getIdMessage());
+                                    }
+                                    clientMsgHolder.client_Image.setVisibility(View.VISIBLE);
+                                    clientMsgHolder.client_ImageLoadingText.setVisibility(View.VISIBLE);
+                                } else {
+                                    asyncImageLoad(messages.get(position).getMessage_Image().trim(), clientMsgHolder);
+                                }
+                            //}
+                        } else {
+                            clientMsgHolder.client_Image.setVisibility(View.GONE);
+                            clientMsgHolder.client_ImageLoadingText.setVisibility(View.GONE);
                         }
 
 
@@ -81,10 +98,23 @@ public class ChatMessagesAdapter  extends RecyclerView.Adapter<RecyclerView.View
             case ChatMessageViewTypes.AUTHOR_ADMIN:{
                 AdminMsgHolder adminMsgHolder = (AdminMsgHolder) holder;
                 adminMsgHolder.admin_Msg.setText(messages.get(position).getMessage_Text());
-                        if (messages.get(position).getMessage_Image() != null && !messages.get(position).getMessage_Image().equals("")) {
-                            if(adminMsgHolder.admin_Image.getVisibility()==View.GONE) {
-                               asyncImageLoad(messages.get(position).getMessage_Image().trim(),adminMsgHolder);
-                            }
+                        if (messages.get(position).getMessage_Image() != null && !messages.get(position).getMessage_Image().equals("0")) {
+//                            if(adminMsgHolder.admin_Image.getVisibility()==View.GONE) {
+                                if(messages.get(position).getMessage_Image().equals("1")){
+                                    //load
+                                    if(bindedFragment!=null) {
+                                        bindedFragment.loadNewImg(messages.get(position).getIdMessage());
+
+                                    }
+                                    adminMsgHolder.admin_Image.setVisibility(View.VISIBLE);
+                                    adminMsgHolder.admin_ImageLoadingText.setVisibility(View.VISIBLE);
+                                } else {
+                                    asyncImageLoad(messages.get(position).getMessage_Image().trim(), adminMsgHolder);
+                                }
+                            //}
+                        } else {
+                            adminMsgHolder.admin_Image.setVisibility(View.GONE);
+                            adminMsgHolder.admin_ImageLoadingText.setVisibility(View.GONE);
                         }
 
 

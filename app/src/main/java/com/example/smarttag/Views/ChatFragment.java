@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -20,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.provider.MediaStore;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +29,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.smarttag.Models.MessageAttachment;
 import com.example.smarttag.Models.SfcMessage;
 import com.example.smarttag.PresentationActivity;
 import com.example.smarttag.R;
@@ -85,7 +88,7 @@ public class ChatFragment extends Fragment {
         ButterKnife.bind(this,view);
 
         messageRecycler.setLayoutManager(new LinearLayoutManager(requireActivity(),LinearLayoutManager.VERTICAL,false));
-        chatMessagesAdapter = new ChatMessagesAdapter(sfcMessageArrayList,getActivity());
+        chatMessagesAdapter = new ChatMessagesAdapter(sfcMessageArrayList,this,getActivity());
         messageRecycler.setAdapter(chatMessagesAdapter);
 
         viewModel.getSessionLiveData().observe(getViewLifecycleOwner(), new Observer<ViewModelEvent>() {
@@ -94,7 +97,6 @@ public class ChatFragment extends Fragment {
                 switch (viewModelEvent.getWe_type()){
                     case ChatViewModel.ChatViewModelEventTypes.CHAT_LIST: {
                         if(viewModelEvent.getObject()!=null) {
-                            Toasty.warning(getActivity(),"MESSAGE LIST RECIEVED",Toasty.LENGTH_SHORT).show();
                             ArrayList<SfcMessage> newMessageIncome = (ArrayList<SfcMessage>) viewModelEvent.getObject();
                             sfcMessageArrayList.clear();
                             sfcMessageArrayList.addAll(newMessageIncome);
@@ -121,6 +123,14 @@ public class ChatFragment extends Fragment {
                             }
                         }
                         break;
+                    }
+                    case ChatViewModel.ChatViewModelEventTypes.CHAT_MSG_IMG:{
+                        if(viewModelEvent.getObject()!=null){
+                            MessageAttachment attachment = (MessageAttachment) viewModelEvent.getObject();
+                            if(attachment!=null){
+                                onMessageAttachmentArrived(attachment);
+                            }
+                        }
                     }
                 }
             }
@@ -204,5 +214,19 @@ public class ChatFragment extends Fragment {
     public void onResume() {
 
         super.onResume();
+    }
+
+    public void onMessageAttachmentArrived(MessageAttachment attachment){
+        for(int i=0; i<sfcMessageArrayList.size();i++){
+            if(sfcMessageArrayList.get(i).getIdMessage().equals(attachment.getMessageId())){
+                sfcMessageArrayList.get(i).setMessage_Image(attachment.getImage64());
+                chatMessagesAdapter.notifyItemChanged(i);
+                break;
+            }
+        }
+    }
+
+    public void loadNewImg(Long idMessage) {
+        viewModel.requestMessageImage(idMessage);
     }
 }

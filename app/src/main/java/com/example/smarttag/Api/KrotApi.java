@@ -5,6 +5,7 @@ import com.example.smarttag.Models.BleEvt;
 import com.example.smarttag.Models.CltDev;
 import com.example.smarttag.Models.DeviceInfo;
 import com.example.smarttag.Models.GpsEvent;
+import com.example.smarttag.Models.MessageAttachment;
 import com.example.smarttag.Models.SfcMessage;
 import com.example.smarttag.Models.UserInfo;
 import com.example.smarttag.Session;
@@ -52,5 +53,10 @@ public interface KrotApi {
     Call<Boolean> newmsg(@Header("api-key")String apikey,
                          @Query("client_id")Long client_id,
                          @Body SfcMessage sfcMessage);
+
+    @POST("MessageImage")
+    Call<MessageAttachment> msgimg(@Header("api-key")String apikey,
+                                   @Query("client_id")Long client_id,
+                                   @Query("message_id") Long messageId);
 }
 

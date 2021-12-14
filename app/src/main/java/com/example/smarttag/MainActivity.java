@@ -20,6 +20,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 
 import com.example.smarttag.Models.SfcMessage;
 import com.example.smarttag.Models.UserInfo;
@@ -95,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         viewModel = new ViewModelProvider(this).get(WelcomeViewModel.class);
-
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         loadingStatus.showNeutral(getString(R.string.welcome_permissionscheck));
 
 
