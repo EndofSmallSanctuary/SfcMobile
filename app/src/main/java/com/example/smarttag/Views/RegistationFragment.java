@@ -46,11 +46,11 @@ public class RegistationFragment extends Fragment {
             if(company_name.getText().toString().equals("")||
                person_name.getText().toString().equals("")||
                person_phone.getText().toString().equals("")){
-                Toasty.error(getActivity(),"Все поля должны быть заполнены",Toasty.LENGTH_SHORT).show();
+                Toasty.error(getActivity(), getString(R.string.all_fields_must_be_not_empty),Toasty.LENGTH_SHORT).show();
             }
             else {
                 if(person_phone.getText().toString().length()<10){
-                    Toasty.error(getActivity(),"Все поля должны быть заполнены",Toasty.LENGTH_SHORT).show();
+                    Toasty.error(getActivity(),getString(R.string.correct_phone_required),Toasty.LENGTH_SHORT).show();
                     return;
                 }
                 MainActivity activity = (MainActivity)getActivity();

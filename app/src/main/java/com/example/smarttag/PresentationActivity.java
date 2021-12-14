@@ -3,6 +3,7 @@ package com.example.smarttag;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.BroadcastReceiver;
@@ -11,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -18,11 +20,16 @@ import android.util.Log;
 import android.view.MenuItem;
 
 import com.example.smarttag.Models.BleEvt;
+import com.example.smarttag.Models.CltDev;
+import com.example.smarttag.Models.GpsEvent;
+import com.example.smarttag.Models.SfcMessage;
 import com.example.smarttag.Services.BluetoothService;
 import com.example.smarttag.Services.GpsService;
-import com.example.smarttag.ViewModels.BluetoothFragment.ForegroundEvent;
-import com.example.smarttag.ViewModels.PresentationViewModel;
+import com.example.smarttag.ViewModels.Presentation.ForegroundEvent;
+import com.example.smarttag.ViewModels.Presentation.PresentationViewModel;
+import com.example.smarttag.ViewModels.ViewModelEvent;
 import com.example.smarttag.Views.BluetoothFragment;
+import com.example.smarttag.Views.ChatFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
@@ -32,9 +39,11 @@ import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import es.dmoral.toasty.Toasty;
 
 public class PresentationActivity extends AppCompatActivity {
+
+
+    Boolean isNeedToBeSent = false;
 
     @BindView(R.id.sfc_navigation_bar)
     BottomNavigationView navigationView;
@@ -68,7 +77,7 @@ public class PresentationActivity extends AppCompatActivity {
             BluetoothFragment bluetoothFragment = (BluetoothFragment) getSupportFragmentManager().findFragmentByTag("ble_fragment");
             if(bluetoothFragment!=null){
                 bluetoothFragment.updateBleServiceStatus();
-                bluetoothService.startProcessing();
+                //bluetoothService.startProcessing();
                 bluetoothFragment.updateRequest();
                 bluetoothFragment.updateScanMode();
             }
@@ -86,7 +95,21 @@ public class PresentationActivity extends AppCompatActivity {
             try {
                 BleEvt bleEvt = intent.getParcelableExtra("payload");
                 if(bleEvt!=null){
-                    Toasty.success(PresentationActivity.this,bleEvt.getBleEvt_NumMsg()+"",Toasty.LENGTH_SHORT).show();
+                    Location location = gpsService.getActualLocation();
+                    if(gpsService.validateLocation(location)) {
+                        onNewForegroundEvent(new ForegroundEvent(ContextCompat.getDrawable(PresentationActivity.this, R.drawable.bluetooth), "Smart Tag event",
+                                bleEvt.getBleDev().getBleDev_Name() +" "+ getString(R.string.has_sent) + " " + getString(R.string.msg) + " " + bleEvt.getBleEvt_NumMsg() + "\n" + getString(R.string.sending_actuall_date)
+
+                        ));
+                        bleEvt.setBleEvt_Lat(location.getLatitude());
+                        bleEvt.setBleEvt_Long(location.getLongitude());
+                        bleEvt.setBleEvt_Alt(location.getAltitude());
+                    } else {
+                        onNewForegroundEvent(new ForegroundEvent(ContextCompat.getDrawable(PresentationActivity.this, R.drawable.bluetooth), "Smart Tag event",
+                                bleEvt.getBleDev().getBleDev_Name() +" "+ getString(R.string.has_sent) + " " + getString(R.string.msg) + " " + bleEvt.getBleEvt_NumMsg() +"\n" + getString(R.string.sending_zeros)));
+                    }
+
+                    viewmodel.sendNewBleEvent(bleEvt);
                 }
             } catch (Exception e){
                 Log.d("status",e.getMessage());
@@ -100,8 +123,62 @@ public class PresentationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_presentation);
         ButterKnife.bind(this);
-        viewmodel = new ViewModelProvider(this).get(PresentationViewModel.class);
+
         registerReceiver(eventReciever,new IntentFilter("ACTION_SMART_TAG"));
+        viewmodel = new ViewModelProvider(this).get(PresentationViewModel.class);
+        viewmodel.getProcessingEvents().observe(this, new Observer<ViewModelEvent>() {
+            @Override
+            public void onChanged(ViewModelEvent viewModelEvent) {
+                switch (viewModelEvent.getWe_type()){
+                    case PresentationViewModel.PresentationEventsTypes
+                            .GPS_EVENT : {
+                        Boolean eventResult = (Boolean) viewModelEvent.getObject();
+                        if(eventResult!=null) {
+                            if(eventResult) {
+                                onNewForegroundEvent(new ForegroundEvent(ContextCompat.getDrawable(PresentationActivity.this, R.drawable.location),
+                                        getString(R.string.gps_event_transfer), getString(R.string.Delivered)));
+                            } else {
+                                onNewForegroundEvent(new ForegroundEvent(ContextCompat.getDrawable(PresentationActivity.this, R.drawable.location),
+                                        getString(R.string.gps_event_transfer), getString(R.string.not_delivered)));
+                            }
+                        }
+                        else {
+                            onNewForegroundEvent(new ForegroundEvent(ContextCompat.getDrawable(PresentationActivity.this,R.drawable.location),
+                                    getString(R.string.gps_event_transfer),getString(R.string.poor_connection)));
+                        }
+                        break;
+                    }
+                    case PresentationViewModel.PresentationEventsTypes.BLUETOOTH_EVENT: {
+                        Integer bluetoothResult = (Integer) viewModelEvent.getObject();
+                        if(bluetoothResult == null){
+                            onNewForegroundEvent(new ForegroundEvent(ContextCompat.getDrawable(PresentationActivity.this,R.drawable.bluetooth),
+                                    getString(R.string.smart_tag_event), getString(R.string.deilvery_failed)
+                                    ));
+                            break;
+                        }
+                        if(bluetoothResult == PresentationViewModel.PresentationEventsTypes.BLUETOOTH_EVENT_PLUS){
+                            BluetoothFragment bluetoothFragment = (BluetoothFragment) getSupportFragmentManager().findFragmentByTag("ble_fragment");
+                            if(bluetoothFragment!=null) {
+                                bluetoothFragment.onNewDeviceAllowed();
+                            }
+                        }
+                        break;
+                    }
+
+                    case PresentationViewModel.PresentationEventsTypes.PERSONAL_INFO:{
+                        CltDev thisClient = (CltDev) viewModelEvent.getObject();
+                        if(thisClient!=null){
+                            writeCltToPrefs(thisClient);
+                        }
+                        break;
+                    }
+                }
+            }
+        });
+
+        viewmodel.getPersonalInfo();
+
+
 
         gpsTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -109,13 +186,25 @@ public class PresentationActivity extends AppCompatActivity {
                 if(getGpsServiceStatus()){
                     Location location = getActualLocation();
                     if(location!=null){
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                prepareSignatureRequest(ForegroundEvent.FOREGROUND_EVENT_TYPE_GPS,
-                                        getString(R.string.gps_location_arrived),"Lat: "+location.getLatitude()+" "+"Long: "+location.getLongitude());
-                            }
-                        });
+                        if(gpsService.validateLocation(location)) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    prepareSignatureRequest(ForegroundEvent.FOREGROUND_EVENT_TYPE_GPS,
+                                            getString(R.string.gps_location_arrived), getString(R.string.data_packet_came) + ForegroundEvent.milisToStrDate(location.getTime()));
+                                    viewmodel.SendNewGpsEvent(new GpsEvent(location.getTime(),location.getLatitude(),location.getLongitude(),location.getAltitude()));
+                                }
+                            });
+                        } else {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    prepareSignatureRequest(ForegroundEvent.FOREGROUND_EVENT_TYPE_GPS,
+                                          getString(R.string.location_expired), getString(R.string.last_packet_came)
+                                                    + ForegroundEvent.milisToStrDate(location.getTime()));
+                                }
+                            });
+                        }
                     } else {
                         runOnUiThread(new Runnable() {
                             @Override
@@ -127,6 +216,8 @@ public class PresentationActivity extends AppCompatActivity {
 
                     }
                 }
+
+
             }
         },5000,5000);
 
@@ -144,19 +235,38 @@ public class PresentationActivity extends AppCompatActivity {
         navigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                Log.d("Item",item.getItemId()+"");
                 switch (item.getItemId()){
-
+                    case R.id.Menu_Bluetooth: {
+                        getSupportFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.Presentation_ViewHolder,new BluetoothFragment(),"ble_fragment")
+                                .commit();
+                        break;
+                    }
+                    case R.id.Menu_Chat:  {
+                        getSupportFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.Presentation_ViewHolder,new ChatFragment(),"chat_fragment")
+                                .commit();
+                        break;
+                    }
                 }
                 return true;
             }
         });
     }
 
+    private void writeCltToPrefs(CltDev thisClient) {
+        SharedPreferences preferences = getSharedPreferences("prefs",Context.MODE_PRIVATE);
+        preferences.edit().putLong("cltId",thisClient.getIdCltDev()).commit();
+        preferences.edit().putString("bleDevs",thisClient.getBleDevs()).commit();
+
+    }
 
 
     @Override
     protected void onDestroy() {
+        gpsTimer.cancel();
         unregisterReceiver(eventReciever);
         unbindService(bluetoothServiceConnection);
         unbindService(gpsServiceConnection);
@@ -166,19 +276,28 @@ public class PresentationActivity extends AppCompatActivity {
     }
 
     public Boolean getBleServiceStatus(){
-        return this.bluetoothService.isAlive();
+        if(this.bluetoothService!=null)
+            return this.bluetoothService.isAlive();
+        else return false;
     }
     public Boolean getGpsServiceStatus(){
-        return this.gpsService.isAlive();
+        if(this.gpsService!=null)
+            return this.gpsService.isAlive();
+        else return false;
+    }
+    public Boolean getScanStatus() {
+        if(this.bluetoothService!=null)
+            return this.bluetoothService.getScanMode();
+        else return false;
     }
     public void toogleScanMode(Boolean status){
        this.bluetoothService.setScanMode(status);
     }
-    public Boolean getScanStatus() {
-        return this.bluetoothService.getScanMode();
-    }
+
     public Boolean getRequestStatus() {
-        return this.bluetoothService.isInRequest();
+        if(bluetoothService!=null)
+            return this.bluetoothService.isInRequest();
+        else return false;
     }
     public void toogleRequest(boolean b) {
         if(b) {
@@ -187,6 +306,13 @@ public class PresentationActivity extends AppCompatActivity {
             this.bluetoothService.stopProcessing();
         }
     }
+
+    public void startBluetoothProcessing(){
+        if(bluetoothService!=null){
+            bluetoothService.startProcessing();
+        }
+    }
+
     public Location getActualLocation(){
         return this.gpsService.getActualLocation();
     }
@@ -215,6 +341,7 @@ public class PresentationActivity extends AppCompatActivity {
         }
 
     }
+
 
 
 

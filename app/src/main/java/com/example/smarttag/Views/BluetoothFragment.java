@@ -1,9 +1,12 @@
 package com.example.smarttag.Views;
 
-import android.location.Location;
+import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
@@ -11,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,25 +22,28 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.smarttag.BluetoothArmyActivity;
 import com.example.smarttag.Models.BleDev;
 import com.example.smarttag.PresentationActivity;
 import com.example.smarttag.R;
-import com.example.smarttag.ViewModels.BluetoothFragment.BluetoothEventsTypes;
-import com.example.smarttag.ViewModels.BluetoothFragment.BluetoothViewModel;
-import com.example.smarttag.ViewModels.BluetoothFragment.ForegroundEvent;
+import com.example.smarttag.ViewModels.BluetoothViewModel;
+import com.example.smarttag.ViewModels.Presentation.ForegroundEvent;
 import com.example.smarttag.ViewModels.ViewModelEvent;
 import com.example.smarttag.Views.Adapters.BluetoothDevsAdapter;
 import com.example.smarttag.Views.Adapters.ForegroundEventsAdapter;
 
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
 public class BluetoothFragment extends Fragment {
+
+    @BindView(R.id.Bluetooth_Recycler_ShowDetails)
+    TextView showDetails;
+    @BindView(R.id.Bluetooth_Recycler_EmptyDevsText)
+    TextView emptyDevsText;
 
     @BindView(R.id.Bluetooth_Recyclers_Devs)
     RecyclerView devsRecycler;
@@ -73,35 +80,59 @@ public class BluetoothFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        parentActivity  =  (PresentationActivity) requireActivity();
+        viewModel = new ViewModelProvider(this).get(BluetoothViewModel.class);
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_bluetooth, container, false);
         ButterKnife.bind(this,view);
-        parentActivity  =  (PresentationActivity) requireActivity();
-        viewModel = new ViewModelProvider(this).get(BluetoothViewModel.class);
+
 
         foregroundEventsRecycler.setLayoutManager(new LinearLayoutManager(getActivity(),LinearLayoutManager.HORIZONTAL,false));
         foregroundEventsAdapter = new ForegroundEventsAdapter(getActivity(), parentActivity.getForegroundEvents());
         foregroundEventsRecycler.setAdapter(foregroundEventsAdapter);
 
-        devsAdapter = new BluetoothDevsAdapter(getActivity(), availableBleDevs);
+        devsAdapter = new BluetoothDevsAdapter(getActivity(), availableBleDevs,false);
         devsRecycler.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
         devsRecycler.setAdapter(devsAdapter);
 
+        showDetails.setOnClickListener(v->{
+            Intent intent = new Intent(requireActivity(), BluetoothArmyActivity.class);
+            intent.putExtra("devs",availableBleDevs);
+            startActivity(intent);
+        });
+
+
         viewModel.getBluetoothLiveData().observe(getViewLifecycleOwner(), new Observer<ViewModelEvent>() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onChanged(ViewModelEvent viewModelEvent) {
                 switch (viewModelEvent.getWe_type()){
-                    case BluetoothEventsTypes
+                    case BluetoothViewModel.BluetoothEventsTypes
                             .AVAILABLE_DEVS: {
                         if (viewModelEvent.getObject()!=null){
                             ArrayList<BleDev> bleDevs = (ArrayList<BleDev>) viewModelEvent.getObject();
+                            if(bleDevs.size()==0){
+                                parentActivity.toogleScanMode(true);
+                                updateScanMode();
+                            } else {
+                                showDetails.setVisibility(View.VISIBLE);
+                                emptyDevsText.setVisibility(View.GONE);
+                                devsRecycler.setVisibility(View.VISIBLE);
+                            }
+
+                            //Если реквест выключен попытаться включить
+                            if(!isRequestLive) {
+                                parentActivity.startBluetoothProcessing();
+                                updateRequest();
+                            }
+
+
                             availableBleDevs.clear();
                             availableBleDevs.addAll(bleDevs);
-                            devsAdapter.notifyDataSetChanged();
+                            devsAdapter.notifyItemRangeChanged(0,availableBleDevs.size());
                             break;
                         }
                     }
@@ -121,9 +152,7 @@ public class BluetoothFragment extends Fragment {
            updateScanMode();
         });
 
-        functions_updategps.setOnClickListener(v -> {
-            this.updateGpsServiceStatus();
-        });
+        functions_updategps.setOnClickListener(v -> this.updateGpsServiceStatus());
 
         return view;
     }
@@ -131,7 +160,10 @@ public class BluetoothFragment extends Fragment {
     @Override
     public void onResume() {
         viewModel.requestAllBleDevs();
-        foregroundEventsAdapter.notifyDataSetChanged();
+        updateScanMode();
+        updateRequest();
+        updateGpsServiceStatus();
+        updateBleServiceStatus();
         super.onResume();
     }
 
@@ -196,6 +228,7 @@ public class BluetoothFragment extends Fragment {
     }
 
 
-
-
+    public void onNewDeviceAllowed() {
+        this.viewModel.requestAllBleDevs();
+    }
 }

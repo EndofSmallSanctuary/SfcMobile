@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:animateLayoutChanges="true"
+    android:background="#faebd7"
+    android:layout_height="match_parent"
+    android:paddingBottom="5dp"
+    tools:context=".Views.ChatFragment">
+
+    <androidx.recyclerview.widget.RecyclerView
+        app:layout_constraintBottom_toTopOf="@id/Chat.ControlPanel"
+        app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/Chat.InnerRecycler"
+        android:layout_width="match_parent"
+        android:paddingBottom="10dp"
+        android:layout_height="0dp"/>
+
+    <TextView
+        android:id="@+id/Chat.RecyclerLoading"
+        android:textColor="@android:color/darker_gray"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:text="@string/messages_loading"
+        android:textAlignment="center"
+        android:fontFamily="@font/roboto_bold"
+        android:textSize="30sp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/Chat.AttachPanel"
+        android:animateLayoutChanges="true"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@id/Chat.ControlPanel"
+        app:layout_constraintStart_toStartOf="@id/Chat.ControlPanel"
+        app:layout_constraintBottom_toTopOf="@id/Chat.ControlPanel"
+        android:background="@drawable/top_corners_rounded_layout"
+        android:layout_width="0dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:layout_height="wrap_content">
+
+
+
+        <TextView
+            android:id="@+id/Chat.ControlPanel.FileName"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/Chat.ControlPanel.CancelSelection"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:paddingLeft="5dp"
+            android:paddingEnd="5dp"
+            android:text="Sample text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"/>
+
+        <ImageView
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_margin="5dp"
+            android:background="@drawable/close"
+            android:id="@+id/Chat.ControlPanel.CancelSelection"
+            android:layout_width="15dp"
+            android:layout_height="15dp"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/Chat.ControlPanel"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:animateLayoutChanges="true"
+        android:background="@drawable/chat_entry_field"
+        android:paddingStart="10dp"
+        android:paddingTop="5dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="5dp"
+        app:layout_constraintBottom_toBottomOf="@id/Chat.Send"
+        app:layout_constraintEnd_toStartOf="@id/Chat.Send"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/Chat.Send"
+        app:layout_constraintVertical_bias="0.0">
+
+        <EditText
+            android:id="@+id/Chat.Question.Text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@android:color/transparent"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:paddingStart="5dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="5dp"
+            android:paddingBottom="5dp"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/Chat.ControlPanel.Attach"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/Chat.ControlPanel.Attach"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/ic_baseline_photo_camera_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/Chat.Send"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="16dp"
+        android:backgroundTint="@color/hpweak"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_baseline_send_24"
+        app:borderWidth="0dp"
+        app:fabCustomSize="40dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:tint="@color/white" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

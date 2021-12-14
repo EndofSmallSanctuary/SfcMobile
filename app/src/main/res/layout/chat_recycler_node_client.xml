@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@android:color/transparent"
+    android:layout_height="wrap_content">
+
+    <View
+        android:id="@+id/view_center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="1dp"
+        android:layout_height="1dp"/>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/Chat.Holder.ClientMSG"
+    android:layout_width="0dp"
+    android:layout_marginTop="10dp"
+    android:layout_marginEnd="10dp"
+    android:background="@drawable/chat_message_client"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintStart_toStartOf="@id/view_center"
+    app:layout_constraintEnd_toEndOf="parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:textAlignment="textStart"
+        android:textColor="#333"
+        android:text="Sample messageKKKKKKKKKKKKKKK text"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingStart="10dp"
+        android:id="@+id/Chat.Message.Client.Text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"/>
+
+    <ImageView
+        android:visibility="gone"
+        android:id="@+id/Chat.Message.Client.Image"
+        android:layout_marginTop="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/Chat.Message.Client.Text"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:scaleType="fitCenter"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:layout_height="150dp"
+        android:layout_width="wrap_content"
+        android:layout_marginBottom="5dp"
+        />
+
+    <TextView
+        android:visibility="gone"
+        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:textAlignment="center"
+        android:textColor="@android:color/darker_gray"
+        android:paddingStart="5dp"
+        android:paddingEnd="5dp"
+        android:text="@string/imageLoading"
+        android:id="@+id/Chat.Message.Client.Text.Loading"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/Chat.Message.Client.Text"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        app:layout_constraintBottom_toBottomOf="@id/Chat.Holder.ClientMSG"
+        app:layout_constraintEnd_toStartOf="@id/Chat.Holder.ClientMSG"
+        android:id="@+id/Chat.Message.Client.Time"
+        android:layout_marginBottom="3dp"
+        android:layout_marginEnd="4dp"
+        android:textSize="10sp"
+        android:text="19:57"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

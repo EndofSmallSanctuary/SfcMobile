@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.smarttag.R;
-import com.example.smarttag.ViewModels.BluetoothFragment.ForegroundEvent;
+import com.example.smarttag.ViewModels.Presentation.ForegroundEvent;
 
 import java.util.ArrayList;
 
